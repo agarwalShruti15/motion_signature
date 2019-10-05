@@ -50,8 +50,9 @@ if __name__ == '__main__':
 		# if there are mp4 files then extract embeddings from this folder
 		vid_files = [v for v in os.listdir(dirname) if v.endswith('.mp4')]  # get all the videos
 		for vi in range(len(vid_files)):
-			out_file = os.path.join(ofd, '_'.join(dirname[len(bs_fldr)+1:].split('/')) + '.nyp')
-			full_struct = [full_struct (dirname, vid_files[vi].split('.')[0], out_file, emb_model, openface_path)]
+			fl_n = os.path.splitext(vid_files[vi])[0] # the base file name
+			out_file = os.path.join(ofd, '_'.join(dirname[len(bs_fldr)+1:].split('/')) + '_' + fl_n + '.npy')
+			full_struct.append((dirname, fl_n, out_file, emb_model, openface_path))
 			
 	# run the jobs in parallel
 	start_time = time.time()
@@ -59,5 +60,5 @@ if __name__ == '__main__':
 	njobs = np.min([num_cores, njobs])
 	print('Number of Cores {} \n'.format(num_cores))
 	print('total processes {}'.format(len(full_struct)))
-	Parallel(n_jobs=njobs, verbose=20)(delayed(u.fabnet_one_vid)(*full_struct[c]) for c in range(len(full_struct)))
+	Parallel(n_jobs=njobs, verbose=10)(delayed(u.fabnet_one_vid)(*full_struct[c]) for c in range(len(full_struct)))
 	print('end time {} seconds'.format(time.time() - start_time))	
