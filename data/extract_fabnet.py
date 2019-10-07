@@ -52,7 +52,8 @@ if __name__ == '__main__':
 		for vi in range(len(vid_files)):
 			fl_n = os.path.splitext(vid_files[vi])[0] # the base file name
 			out_file = os.path.join(ofd, '_'.join(dirname[len(bs_fldr)+1:].split('/')) + '_' + fl_n + '.npy')
-			full_struct.append((dirname, fl_n, out_file, emb_model, openface_path))
+			if not os.path.exists(out_file):
+				full_struct.append((dirname, fl_n, out_file, emb_model, openface_path))
 			
 	# run the jobs in parallel
 	start_time = time.time()

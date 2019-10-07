@@ -35,32 +35,31 @@ def get_video_frame_emb(frame, emb_model):
 
 def fabnet_one_vid(in_fldr, fl_n, out_file, emb_model, openface_path):
     cur_vid = os.path.join(in_fldr, fl_n + '.mp4')
-    tmp_fldr = 'aligned_faces'
     
-    if not os.path.exists(out_file):
-        try:
-            
-            frm_fldr = save_openface_frame(cur_vid, tmp_fldr, crop_sz, openface_path)
-            filenms = [f for f in os.listdir(frm_fldr) if f.endswith('.bmp')]
-            
-            # init the array
-            out_emb = np.zeros((len(filenms), emb_n))
-                        
-            for i in range(len(out_emb)):
-                filenm = 'frame_det_00_{0:06d}.bmp'.format(i+1)
-                if os.path.exists(os.path.join(frm_fldr, filenm)):
-                    cur_frame = plt.imread(os.path.join(frm_fldr, filenm))
-                    out_emb[i, :] = get_video_frame_emb(cur_frame, emb_model)
-                else:
-                    print('image not exist {}'.format(os.path.join(frm_fldr, filenm)))
-                        
-            shutil.rmtree(frm_fldr)
-            os.remove(os.path.join(tmp_fldr, fl_n + '_of_details.txt'))
-            os.remove(os.path.join(tmp_fldr, fl_n + '.csv'))
-            
-            # save the output
-            np.save(out_file, out_emb.astype(np.float32))
-            
-        except Exception as e:
-            print('{} {}'.format(cur_vid, e))
-
+    tmp_fldr = '_'.join(in_fldr.split('/')[-2:]) + '_' + fl_n # create a folder which is unique to this file 
+    
+    assert not os.path.exists(out_file)
+    try:
+        
+        frm_fldr = save_openface_frame(cur_vid, tmp_fldr, crop_sz, openface_path)
+        filenms = [f for f in os.listdir(frm_fldr) if f.endswith('.bmp')]
+        
+        # init the array
+        out_emb = np.zeros((len(filenms), emb_n))
+                    
+        for i in range(len(out_emb)):
+            filenm = 'frame_det_00_{0:06d}.bmp'.format(i+1)
+            if os.path.exists(os.path.join(frm_fldr, filenm)):
+                cur_frame = plt.imread(os.path.join(frm_fldr, filenm))
+                out_emb[i, :] = get_video_frame_emb(cur_frame, emb_model)
+            else:
+                print(cur_vid, i)
+        
+        # clear the aligned images
+        shutil.rmtree(tmp_fldr)
+        
+        # save the output
+        np.save(out_file, out_emb.astype(np.float32))
+        
+    except Exception as e:
+        print('{} {}'.format(cur_vid, e))

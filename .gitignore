@@ -6,3 +6,5 @@ data/vox2_mp4/
 data/OpenFace-master/
 wingPro7.wpr
 wingPro7.wpu
+**__pycache__/
+data/id0*
