@@ -12,7 +12,7 @@ def save_openface_frame(in_vid, out_fldr, size, openface_path):
 
     #save the frames
     os.makedirs(out_fldr, exist_ok=True)
-    cmd = './{}/FeatureExtraction -f {} -simsize {} -simalign -nomask -out_dir {} > out.txt'.format(openface_path, in_vid,size,out_fldr)
+    cmd = './{}/FeatureExtraction -f {} -simsize {} -simalign -nomask -out_dir {} | grep -m 1 -o "abc" | grep -o "123"'.format(openface_path, in_vid,size,out_fldr)
     os.system(cmd)
     
     return os.path.join(out_fldr, in_vid.split('/')[-1].split('.')[0] + '_aligned')

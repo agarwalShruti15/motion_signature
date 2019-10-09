@@ -63,6 +63,9 @@ class FabNetDataLoader(Dataset):
         label = self.label_list[index]
 
         img = np.load(img_path, mode=self.mode)
+        # if there is audio feature, pick only FabNet
+        if len(img.shape)>2:
+            img = img[:,:, 0].copy()
         if self.transforms is not None:
             img = self.transforms(img)
         return img, label

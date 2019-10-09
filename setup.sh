@@ -7,9 +7,9 @@
 
 # Openface UBUNTU installation, it assume we already have opencv and dlib installed
 cd data
-wget https://github.com/TadasBaltrusaitis/OpenFace/archive/master.zip
-unzip master.zip
-rm master.zip
+#wget https://github.com/TadasBaltrusaitis/OpenFace/archive/master.zip
+#unzip master.zip
+#rm master.zip
 cd OpenFace-master
 sh download_models.sh
 echo "Installing OpenFace..."
