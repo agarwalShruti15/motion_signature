@@ -7,7 +7,7 @@
 
 MODEL:
   BACKBONE:
-    NAME: bninception
+    NAME: vgg16_bn
 
 SOLVER:
   MAX_ITERS: 3000
@@ -18,12 +18,12 @@ SOLVER:
   WEIGHT_DECAY: 0.0005
   
 DATA:
-  TRAIN_IMG_SOURCE: resource/datasets/CUB_200_2011/train.txt
+  TRAIN_IMG_SOURCE: /data
   TEST_IMG_SOURCE: resource/datasets/CUB_200_2011/test.txt
   TRAIN_BATCHSIZE: 80
   TEST_BATCHSIZE: 256
   NUM_WORKERS: 8
-  NUM_INSTANCES: 5
+  NUM_INSTANCES: 10 # number of labels in one batch
 
 VALIDATION:
   VERBOSE: 200

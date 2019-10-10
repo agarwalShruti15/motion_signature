@@ -11,10 +11,14 @@ from .collate_batch import collate_fn
 from .datasets.build import build_data_loader
 from .samplers.build import build_sampler
 from .transforms.build import build_transforms
+import torchvision.transforms as T
 
 def build_data(cfg, is_train=True):
     
-    transforms = build_transforms(cfg, is_train=is_train)
+    normalize_transform = build_transforms(cfg, is_train=is_train)
+    transforms = T.Compose([normalize_transform, 
+                            T.ToTensor()])    
+    
     dataset_loader = build_data_loader(cfg, is_train=is_train, transforms=transforms)
     sampler = build_sampler(cfg, dataset=dataset_loader)
     

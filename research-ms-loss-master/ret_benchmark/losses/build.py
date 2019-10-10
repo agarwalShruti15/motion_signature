@@ -6,7 +6,7 @@
 # This source code is licensed under the LICENSE file in the root directory of this source tree.
 
 from .multi_similarity_loss import MultiSimilarityLoss
-from .softmax_loss import CrossEntropyLoss
+from .cross_entropy_loss import CrossEntropyLoss
 from .registry import LOSS
 
 

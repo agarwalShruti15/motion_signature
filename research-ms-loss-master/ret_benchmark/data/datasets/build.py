@@ -10,7 +10,7 @@ from .fabnet import FabNetDataLoader
 def build_data_loader(cfg, is_train, transforms):
     
     # set the transform
-    loader_name = cfg.DATA.DATA_LOADER
+    loader_name = cfg.INPUT.DATA_LOADER
     assert loader_name in DATA_LOADER, \
         f'transform name {loader_name} is not registered in registry'
     return DATA_LOADER[loader_name](cfg, is_train, transforms)

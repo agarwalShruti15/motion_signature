@@ -10,10 +10,6 @@ from ret_benchmark.losses.registry import LOSS
 
 
 @LOSS.register('ce_loss')
-class CrossEntropyLoss(nn.Module):
+class CrossEntropyLoss(nn.CrossEntropyLoss):
     def __init__(self, cfg):
         super(CrossEntropyLoss, self).__init__()
-        
-    def __new__(self):
-        self.loss = nn.CrossEntropyLoss()
-        return self.loss

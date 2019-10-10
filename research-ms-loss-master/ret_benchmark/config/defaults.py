@@ -6,7 +6,6 @@
 # This source code is licensed under the LICENSE file in the root directory of this source tree.
 
 from yacs.config import CfgNode as CN
-from .model_path import MODEL_PATH
 
 # -----------------------------------------------------------------------------
 # Config definition
@@ -14,18 +13,21 @@ from .model_path import MODEL_PATH
 
 _C = CN()
 
+_C.CODE_PATH = '/data/home/shruti/voxceleb/motion_signature/research-ms-loss-master/'
+
 _C.MODEL = CN()
 _C.MODEL.DEVICE = "cuda"
 
 _C.MODEL.BACKBONE = CN()
-_C.MODEL.BACKBONE.NAME = "vgg16_bn"
+_C.MODEL.BACKBONE.NAME = "bninception"
 
-_C.MODEL.PRETRAIN = 'none'
-_C.MODEL.PRETRIANED_PATH = MODEL_PATH
+_C.MODEL.PRETRAIN = 'imagenet'
+_C.MODEL.PRETRIANED_PATH = '/data/model'
 
 _C.MODEL.HEAD = CN()
 _C.MODEL.HEAD.NAME = "linear_norm"
-_C.MODEL.HEAD.DIM = 10
+_C.MODEL.HEAD.DIM = 512
+_C.MODEL.HEAD.IN_CHANNEL = 2048
 
 _C.MODEL.WEIGHT = ""
 
@@ -34,7 +36,7 @@ _C.SAVE_DIR = 'output'
 
 # Loss
 _C.LOSSES = CN()
-_C.LOSSES.NAME = 'ce_loss'
+_C.LOSSES.NAME = 'ms_loss'
 
 # ms loss
 _C.LOSSES.MULTI_SIMILARITY_LOSS = CN()
@@ -44,25 +46,25 @@ _C.LOSSES.MULTI_SIMILARITY_LOSS.HARD_MINING = True
 
 # Data option
 _C.DATA = CN()
-_C.DATA.TRAIN_IMG_SOURCE = '/data/home/shruti/voxceleb/fabnet/vox2_mp4/train_classification.txt'
-_C.DATA.TEST_IMG_SOURCE = '/data/home/shruti/voxceleb/fabnet/vox2_mp4/test_classification.txt'
+_C.DATA.TRAIN_IMG_SOURCE = 'resource/datasets/CUB_200_2011/train.txt'
+_C.DATA.TEST_IMG_SOURCE = 'resource/datasets/CUB_200_2011/test.txt'
 _C.DATA.TRAIN_BATCHSIZE = 70
 _C.DATA.TEST_BATCHSIZE = 256
-_C.DATA.NUM_WORKERS = 10
+_C.DATA.NUM_WORKERS = 8
 _C.DATA.NUM_INSTANCES = 5
 
 # Input option
 _C.INPUT = CN()
 
 # INPUT CONFIG
-_C.INPUT.MODE = 'BGR'
-_C.INPUT.PIXEL_MEAN = '/data/home/shruti/voxceleb/fabnet/vox2_mp4/mean.npy'
-_C.INPUT.PIXEL_STD = '/data/home/shruti/voxceleb/fabnet/vox2_mp4/std.npy'
-
-_C.INPUT.FLIP_PROB = 0.5
-_C.INPUT.ORIGIN_SIZE = 256
-_C.INPUT.CROP_SCALE = [0.16, 1]
-_C.INPUT.CROP_SIZE = 227
+_C.INPUT.MEAN = [104. / 255, 117. / 255, 128. / 255]
+_C.INPUT.STD = 3 * [1. / 255]
+_C.INPUT.TRANSFORM = 'standard_scalar'
+_C.INPUT.MEAN = '/data/home/shruti/voxceleb/fabnet/leaders/leaders_150_mean.npy'
+_C.INPUT.STD = '/data/home/shruti/voxceleb/fabnet/leaders/leaders_150_std.npy'
+_C.INPUT.DATA_LOADER = 'FabNet'
+_C.INPUT.SAMPLER = 'random_identity_sampler'
+_C.INPUT.FRAME_LENGTH = 150 # the number of frames to consider (30 fps frame rate for leaders and 25 for voxceleb)
 
 # SOLVER
 _C.SOLVER = CN()

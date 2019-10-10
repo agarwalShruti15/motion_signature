@@ -5,21 +5,10 @@ import numpy as np
 
 
 @TRANSFORM.register('standard_scalar')
-class StandardScalar():
-    
-    def __init__(self, cfg, is_train):
-
-        self.mean = np.load(cfg.INPUT.MEAN)
-        self.std = np.load(cfg.INPUT.STD)   
+class StandardScalar(object):
+    def __init__(self, cfg, **kargs):
+        self.mean = np.reshape(np.load(cfg.INPUT.MEAN), (1, -1))
+        self.std = np.reshape(np.load(cfg.INPUT.STD), (1, -1))
         
-    def __new__(self):
-        
-        normalize_transform = T.Lambda(lambda x: self.normalize(x))
-        transform = T.Compose([T.ToTensor(),
-            normalize_transform,
-        ])
-        return transform
-    
-    def normalize(self, input):
-        
+    def __call__(self, input):
         return (input - self.mean)/self.std

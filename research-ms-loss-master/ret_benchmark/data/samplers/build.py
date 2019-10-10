@@ -10,7 +10,7 @@ from .random_identity_sampler import RandomIdentitySampler
 def build_sampler(cfg, dataset):
     
     # set the transform
-    sampler_name = cfg.DATA.SAMPLER
+    sampler_name = cfg.INPUT.SAMPLER
     assert sampler_name in SAMPLER, \
         f'sampler name {sampler_name} is not registered in registry'
     return SAMPLER[sampler_name](cfg, dataset)

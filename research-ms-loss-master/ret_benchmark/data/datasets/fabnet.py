@@ -25,7 +25,8 @@ class FabNetDataLoader(Dataset):
             self.img_source = cfg.DATA.TRAIN_IMG_SOURCE
         else:
             self.img_source = cfg.DATA.TEST_IMG_SOURCE
-            
+        
+        self.T = cfg.INPUT.FRAME_LENGTH
         self.transforms = transforms
         self.root = os.path.dirname(self.img_source)
         assert os.path.exists(self.img_source), f"{img_source} NOT found."
@@ -62,10 +63,16 @@ class FabNetDataLoader(Dataset):
         img_path = os.path.join(self.root, path)
         label = self.label_list[index]
 
-        img = np.load(img_path, mode=self.mode)
+        img = np.load(img_path)
         # if there is audio feature, pick only FabNet
         if len(img.shape)>2:
             img = img[:,:, 0].copy()
+            
+        # pick a random frame sequence of T length
+        r_idx = np.random.choice(np.arange(len(img)-self.T+1), 1)[0]
+        img = img[r_idx:r_idx+self.T, :].copy()
+        
         if self.transforms is not None:
             img = self.transforms(img)
-        return img, label
+        
+        return img.float(), label

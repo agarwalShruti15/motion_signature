@@ -4,6 +4,9 @@
 # Contact: github@malong.com
 #
 # This source code is licensed under the LICENSE file in the root directory of this source tree.
+# some_file.py
+import sys
+# insert at 1, 0 is the script path (or '' in REPL)
 
 import argparse
 import torch
@@ -19,6 +22,8 @@ from ret_benchmark.utils.checkpoint import Checkpointer
 
 
 def train(cfg):
+    
+    sys.path.insert(1, cfg.CODE_PATH)
     logger = setup_logger(name='Train', level=cfg.LOGGER.LEVEL)
     logger.info(cfg)
     model = build_model(cfg)

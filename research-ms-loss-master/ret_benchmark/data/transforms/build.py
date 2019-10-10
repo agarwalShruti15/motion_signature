@@ -10,7 +10,7 @@ from .standard_scalar import StandardScalar
 def build_transforms(cfg, is_train=True):
     
     # set the transform
-    trans_name = cfg.DATA.TRANSFORM
+    trans_name = cfg.INPUT.TRANSFORM
     assert trans_name in TRANSFORM, \
         f'transform name {trans_name} is not registered in registry'
-    return TRANSFORM[trans_name](cfg, is_train)
+    return TRANSFORM[trans_name](cfg, is_train=is_train)

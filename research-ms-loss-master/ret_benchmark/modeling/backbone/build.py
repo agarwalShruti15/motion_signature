@@ -1,4 +1,6 @@
 from ret_benchmark.modeling.registry import BACKBONES
+from .vgg16 import VGG
+from .bninception import BNInception
 
 
 def build_backbone(cfg):
