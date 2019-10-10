@@ -64,6 +64,7 @@ _C.INPUT.MEAN = '/data/home/shruti/voxceleb/fabnet/leaders/leaders_150_mean.npy'
 _C.INPUT.STD = '/data/home/shruti/voxceleb/fabnet/leaders/leaders_150_std.npy'
 _C.INPUT.DATA_LOADER = 'FabNet'
 _C.INPUT.SAMPLER = 'random_identity_sampler'
+_C.INPUT.EVAL = 'recall_at_k'
 _C.INPUT.FRAME_LENGTH = 150 # the number of frames to consider (30 fps frame rate for leaders and 25 for voxceleb)
 
 # SOLVER

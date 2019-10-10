@@ -23,22 +23,21 @@ INPUT:
   STD: /data/home/shruti/voxceleb/fabnet/leaders/leaders_150_std.npy
   DATA_LOADER: FabNet
   SAMPLER: random_identity_sampler
-  EVAL: accuracy
   FRAME_LENGTH: 150 # the number of frames to consider (30 fps frame rate for leaders and 25 for voxceleb) 
 
 # Checkpoint save dir
-SAVE_DIR: /data/home/shruti/voxceleb/mdls_ldrs_clasifictn/
+SAVE_DIR: /data/home/shruti/voxceleb/mdls_ldrs_ms/
 
 # Model parameters
 MODEL:
   BACKBONE:
     NAME: vgg16_bn
-  PRETRAIN: none
+  PRETRAIN: classification
   PRETRIANED_PATH: /data/home/shruti/voxceleb/mdls_ldrs_clasifictn/best_model.pth
   
   HEAD:
     NAME: linear_norm
-    DIM: 10
+    DIM: 256
     IN_CHANNEL: 2048
 
 SOLVER:
@@ -54,7 +53,7 @@ VALIDATION:
 
 # Output, Loss
 LOSSES:
-  NAME: ce_loss
+  NAME: ms_loss
   # ms loss params
   MULTI_SIMILARITY_LOSS:
     SCALE_POS: 2.0

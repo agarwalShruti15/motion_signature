@@ -15,6 +15,7 @@ from ret_benchmark.data.evaluations import RetMetric
 from ret_benchmark.utils.feat_extractor import feat_extractor
 from ret_benchmark.utils.freeze_bn import set_bn_eval
 from ret_benchmark.utils.metric_logger import MetricLogger
+from ret_benchmark.data.evaluations.build import build_evaluation
 
 
 def do_train(
@@ -50,16 +51,16 @@ def do_train(
             labels = np.array([int(k) for k in labels])
             feats = feat_extractor(model, val_loader, logger=logger)
 
-            ret_metric = RetMetric(feats=feats, labels=labels)
-            recall_curr = ret_metric.recall_k(1)
+            metric = build_evaluation(cfg)
+            recall_curr = metric.eval(feats=feats, labels=labels, k=1)
 
-            if recall_curr > best_recall:
+            if recall_curr >= best_recall:
                 best_recall = recall_curr
                 best_iteration = iteration
-                logger.info(f'Best iteration {iteration}: recall@1: {best_recall:.3f}')
+                logger.info(f'Best iteration {iteration}: {cfg.INPUT.EVAL}: {best_recall:.3f}')
                 checkpointer.save(f"best_model")
             else:
-                logger.info(f'Recall@1 at iteration {iteration:06d}: {recall_curr:.3f}')
+                logger.info(f'{cfg.INPUT.EVAL} at iteration {iteration:06d}: {recall_curr:.3f}')
 
         model.train()
         model.apply(set_bn_eval)

@@ -6,11 +6,12 @@
 # This source code is licensed under the LICENSE file in the root directory of this source tree.
 
 import numpy as np
+from ret_benchmark.data.registry import EVAL
 
-
+@EVAL.register('recall_at_k')
 class RetMetric(object):
-    def __init__(self, feats, labels):
-
+    
+    def init_feat(self, feats, labels):
         if len(feats) == 2 and type(feats) == list:
             """
             feats = [gallery_feats, query_feats]
@@ -27,8 +28,16 @@ class RetMetric(object):
             self.gallery_labels = self.query_labels = labels
 
         self.sim_mat = np.matmul(self.query_feats, np.transpose(self.gallery_feats))
-
-    def recall_k(self, k=1):
+        
+    
+    def eval(self, **kargs):
+        
+        feats = kargs['feats']
+        labels = kargs['labels']
+        k = kargs['k']
+        
+        self.init_feat(self, feats, labels)
+        
         m = len(self.sim_mat)
 
         match_counter = 0

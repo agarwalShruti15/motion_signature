@@ -66,8 +66,11 @@ class VGG(nn.Module):
     def load_classification_param(self, model_path):
 
         # this is to load the weight trained using classification problem
-        param_dict = torch.load(model_path)
+        param_dict = torch.load(model_path)['model']
+        print(param_dict.keys())
         for i in param_dict:
             if 'head' in i: # no need to intialize the last layer
                 continue
-            self.state_dict()[i].copy_(param_dict[i])
+            k_m = i[len('backbone')+1:]
+            print(k_m)
+            self.state_dict()[k_m].copy_(param_dict[i])

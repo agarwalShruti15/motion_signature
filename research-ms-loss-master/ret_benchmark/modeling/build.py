@@ -27,14 +27,14 @@ def build_model(cfg):
 
     if cfg.MODEL.PRETRAIN == 'imagenet':
         print('Loading imagenet pretrained model ...')
-        pretrained_path = os.path.expanduser(cfg.MODEL.PRETRIANED_PATH[cfg.MODEL.BACKBONE.NAME])
+        pretrained_path = os.path.expanduser(cfg.MODEL.PRETRIANED_PATH)
         model.backbone.load_imagenet_param(pretrained_path)
     elif cfg.MODEL.PRETRAIN == 'classification':
         print('Loading classification pretrained model ...')
-        pretrained_path = os.path.expanduser(cfg.MODEL.PRETRIANED_PATH[cfg.MODEL.BACKBONE.NAME])
+        pretrained_path = os.path.expanduser(cfg.MODEL.PRETRIANED_PATH)
         model.backbone.load_classification_param(pretrained_path)
     elif cfg.MODEL.PRETRAIN == 'resume':
         print('Resuming from model ...')
-        ckp = torch.load(os.path.expanduser(cfg.MODEL.PRETRIANED_PATH[cfg.MODEL.BACKBONE.NAME]))
+        ckp = torch.load(os.path.expanduser(cfg.MODEL.PRETRIANED_PATH))
         model.load_state_dict(ckp['model_state_dict'])
     return model

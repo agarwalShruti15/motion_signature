@@ -7,6 +7,7 @@
 # some_file.py
 import sys
 # insert at 1, 0 is the script path (or '' in REPL)
+sys.path.insert(1, '/data/home/shruti/voxceleb/motion_signature/research-ms-loss-master/')
 
 import argparse
 import torch
@@ -23,7 +24,6 @@ from ret_benchmark.utils.checkpoint import Checkpointer
 
 def train(cfg):
     
-    sys.path.insert(1, cfg.CODE_PATH)
     logger = setup_logger(name='Train', level=cfg.LOGGER.LEVEL)
     logger.info(cfg)
     model = build_model(cfg)
@@ -77,7 +77,7 @@ def parse_args():
     return parser.parse_args()
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':    
     args = parse_args()
     cfg.merge_from_file(args.cfg_file)
     train(cfg)
