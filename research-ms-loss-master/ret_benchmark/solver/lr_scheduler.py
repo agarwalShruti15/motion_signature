@@ -40,10 +40,11 @@ class WarmupMultiStepLR(torch.optim.lr_scheduler._LRScheduler):
             elif self.warmup_method == "linear":
                 alpha = float(self.last_epoch) / self.warmup_iters
                 warmup_factor = self.warmup_factor * (1 - alpha) + alpha
+                
         return [
-            base_lr * warmup_factor * self.gamma ** bisect_right(
+            param_group['lr_mul'] * base_lr * warmup_factor * self.gamma ** bisect_right(
                 self.milestones,
                 self.last_epoch
             )
-            for base_lr in self.base_lrs
+            for param_group, base_lr in zip(self.optimizer.param_groups, self.base_lrs)
         ]

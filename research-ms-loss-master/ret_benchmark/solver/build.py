@@ -10,7 +10,9 @@ def build_optimizer(cfg, model):
             continue
         lr_mul = 1.0
         if "backbone" in key:
-            lr_mul = 0.1
+            lr_mul = cfg.MODEL.BACKBONE.LR_MUL
+        if "head" in key:
+            lr_mul = cfg.MODEL.HEAD.LR_MUL
         params += [{"params": [value], "lr_mul": lr_mul}]
     optimizer = getattr(torch.optim, cfg.SOLVER.OPTIMIZER_NAME)(params,
                                                                 lr=cfg.SOLVER.BASE_LR,

@@ -33,19 +33,21 @@ SAVE_DIR: /data/home/shruti/voxceleb/mdls_ldrs_clasifictn/
 MODEL:
   BACKBONE:
     NAME: vgg16_bn
-  PRETRAIN: none
-  PRETRIANED_PATH: /data/home/shruti/voxceleb/mdls_ldrs_clasifictn/best_model.pth
-  
+    LR_MUL: 1.0
   HEAD:
     NAME: linear_norm
     DIM: 10
     IN_CHANNEL: 2048
+    LR_MUL: 1.0
+    
+  PRETRAIN: none
+  PRETRIANED_PATH: /data/home/shruti/voxceleb/mdls_ldrs_clasifictn/best_model.pth
 
 SOLVER:
-  MAX_ITERS: 3000
+  MAX_ITERS: 5000
   STEPS: [1200, 2400]
   OPTIMIZER_NAME: Adam
-  BASE_LR: 0.0003
+  BASE_LR: 0.1
   WARMUP_ITERS: 0
   WEIGHT_DECAY: 0.0005
   
