@@ -85,6 +85,8 @@ def bootstrap_mean_std(bsfldr, label_file_dict, s_n, s_sz):
 
         # the sample mean, std
         cur_sample = np.concatenate(list(feat_array.values()), axis=0)
+        cur_sample = cur_sample / np.linalg.norm(cur_sample, axis=1, keepdims=True)
+        
         cur_mean = np.mean(cur_sample, axis=0)
         cur_std = np.std(cur_sample, axis=0)
         if i==0:
@@ -115,7 +117,7 @@ if __name__ == '__main__':
     
     #read all the txt file
     parser = argparse.ArgumentParser(description='')
-    parser.add_argument('--bsfldr', type=str, help='path to folder with mp4 files')
+    parser.add_argument('--bsfldr', type=str, help='path to folder with npy files')
     parser.add_argument('--T', type=int, help='the minimum number of frames the file should have', default=150)
     parser.add_argument('--func', type=str, help='the file extraction function')
     parser.add_argument('--outfile', type=str, help='the out file prefix')

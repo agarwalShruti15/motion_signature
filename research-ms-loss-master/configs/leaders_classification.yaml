@@ -11,10 +11,10 @@ CODE_PATH: /data/home/shruti/voxceleb/motion_signature/research-ms-loss-master/
 DATA:
   TRAIN_IMG_SOURCE: /data/home/shruti/voxceleb/fabnet/leaders/leaders_150_train.txt
   TEST_IMG_SOURCE: /data/home/shruti/voxceleb/fabnet/leaders/leaders_150_test.txt
-  TRAIN_BATCHSIZE: 80
+  TRAIN_BATCHSIZE: 50
   TEST_BATCHSIZE: 256
-  NUM_WORKERS: 30 #don't know what it does
-  NUM_INSTANCES: 8 # number of instances per label in one batch
+  NUM_WORKERS: 20 #number of data loader workers
+  NUM_INSTANCES: 5 # number of instances per label in one batch
 
 # Input option
 INPUT:
@@ -32,20 +32,20 @@ SAVE_DIR: /data/home/shruti/voxceleb/mdls_ldrs_clasifictn/
 # Model parameters
 MODEL:
   BACKBONE:
-    NAME: vgg16_bn
+    NAME: vgg16_bn #alexnet #
     LR_MUL: 1.0
   HEAD:
     NAME: linear_norm
     DIM: 10
-    IN_CHANNEL: 2048
+    IN_CHANNEL: 2048 #1024 # alexnet 
     LR_MUL: 1.0
     
   PRETRAIN: none
   PRETRIANED_PATH: /data/home/shruti/voxceleb/mdls_ldrs_clasifictn/best_model.pth
 
 SOLVER:
-  MAX_ITERS: 5000
-  STEPS: [1200, 2400]
+  MAX_ITERS: 200000
+  STEPS: [5000]
   OPTIMIZER_NAME: Adam
   BASE_LR: 0.1
   WARMUP_ITERS: 0

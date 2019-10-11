@@ -17,6 +17,8 @@ from ret_benchmark.utils.freeze_bn import set_bn_eval
 from ret_benchmark.utils.metric_logger import MetricLogger
 from ret_benchmark.data.evaluations.build import build_evaluation
 
+from torch.nn.functional import nll_loss, log_softmax
+
 
 def do_train(
         cfg,
@@ -47,9 +49,7 @@ def do_train(
         if iteration % cfg.VALIDATION.VERBOSE == 0 or iteration == max_iter:
             model.eval()
             logger.info('Validation')
-            labels = val_loader.dataset.label_list
-            labels = np.array([int(k) for k in labels])
-            feats = feat_extractor(model, val_loader, logger=logger)
+            feats, labels = feat_extractor(model, val_loader, logger=logger)
 
             metric = build_evaluation(cfg)
             recall_curr = metric.eval(feats=feats, labels=labels, k=1)

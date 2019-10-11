@@ -12,9 +12,10 @@ this file extracts the face embeddings for each mp4 file present in the base dir
 if __name__ == '__main__':
 
     #read all the txt file
-    bs_fldr = '/data_efs/home/shruti/voxceleb/videos/vox2_mp4/dev/mp4'
-    paths_file = 'data_subset'
-    part_num = 10
+    #bs_fldr = '/data_efs/home/shruti/voxceleb/videos/vox2_mp4/dev/mp4'
+    bs_fldr = '/data/home/shruti/voxceleb/videos/leaders'
+    paths_file = 'data_leaders_full'
+    part_num = 1
 
     # collect all the video files to process
     full_struct = []

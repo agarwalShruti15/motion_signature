@@ -49,7 +49,7 @@ if __name__ == '__main__':
         
         # load the model for frame embeddings
         emb_model = FrontaliseModelMasks_wider(3, inner_nc=u.emb_n, num_additional_ids=num_additional_ids)
-        if gpu==1:
+        if gpu:
                 emb_model.load_state_dict(torch.load(fabnet_path)['state_dict'])
         else:
                 emb_model.load_state_dict(torch.load(fabnet_path, map_location='cpu')['state_dict'])

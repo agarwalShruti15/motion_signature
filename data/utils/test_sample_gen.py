@@ -3,7 +3,7 @@
 import os
 import numpy as np
 
-bsfldr = '/data/home/shruti/voxceleb/fabnet/test_samples/bo'
+bsfldr = '/data/home/shruti/voxceleb/fabnet/test_samples/br'
 samples = 100
 feat = 10
 
@@ -11,8 +11,8 @@ frames = np.random.choice(np.arange(148, 200), samples, replace=True)
 
 os.makedirs(bsfldr, exist_ok=True)
 
-means = np.arange(feat)[:, np.newaxis].T
-stds = np.arange(feat)[:, np.newaxis].T + 1
+means = np.arange(feat)[:, np.newaxis].T + 5
+stds = np.arange(feat)[:, np.newaxis].T + 2
 
 for i in range(samples):
     

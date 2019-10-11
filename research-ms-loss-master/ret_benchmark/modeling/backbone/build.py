@@ -1,6 +1,7 @@
 from ret_benchmark.modeling.registry import BACKBONES
 from .vgg16 import VGG
 from .bninception import BNInception
+from .alexnet import AlexNet
 
 
 def build_backbone(cfg):
