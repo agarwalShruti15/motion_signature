@@ -19,6 +19,8 @@ Motion signature based soft-biometric for people.
   
 ## training
 
-```
-sh run_cub.sh
-```
+1) Activate the virtual environment (source /data/opt/voxceleb/bin/activate)
+2) cd research-ms-loss-master
+3) sh run_cub.sh
+
+There are example configuration files given for classification task and metric learning task in research-ms-loss-master/configs/leaders_classification.yaml and research-ms-loss-master/configs/leader_metric_learning.yaml.
