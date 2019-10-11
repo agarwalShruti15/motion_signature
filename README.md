@@ -16,3 +16,9 @@ Motion signature based soft-biometric for people.
   Example usage is given in run_face_emb.sh
   
   python -W ignore extract_fabnet.py --bsfldr 'vox2_test_mp4' --njobs 10 --openface 'OpenFace-master/build/bin' --fnmodel 'release/nv2_curriculum.pth'
+  
+## training
+
+```
+sh run_cub.sh
+```
