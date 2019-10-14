@@ -1,0 +1,1 @@
+CUDA_VISIBLE_DEVICES=1 python -W ignore extract_vgg.py --bsfldr '/data/home/shruti/voxceleb/videos/leaders' --ofd '/data/home/shruti/voxceleb/vgg/leaders' --njobs 30 --openface 'OpenFace-master/build/bin' --fnmodel 'VGG_FACE.t7' --path_file 'utils/data_leaders_full_0.txt' --gpu False

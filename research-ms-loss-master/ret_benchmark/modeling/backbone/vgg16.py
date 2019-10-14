@@ -10,7 +10,7 @@ cfgs = {
     'E': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M'],
 }
 
-def make_layers(cfg, batch_norm=False):
+def make_layers(cfg, batch_norm=True):
     layers = []
     in_channels = 1
     for v in cfg:
@@ -40,9 +40,7 @@ class VGG(nn.Module):
             nn.Linear(4096, 4096),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(4096, 2048),
-            nn.ReLU(True),
-            nn.Dropout(),
+            nn.Linear(4096, 1024),
         )
 
     def forward(self, x):

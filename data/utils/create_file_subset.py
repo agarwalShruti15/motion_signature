@@ -2,19 +2,16 @@ import os
 import numpy as np
 
 """
-Usage: python -W ignore extract_fabnet.py --bsfldr <basefolder with mp4> --njobs 10 --openface <path to openface build/bin> --fnmodel <path to fabnet model file>
+Creates text file with filename to further extract features.
 
-this file extracts the face embeddings for each mp4 file present in the base directory and sub directories. It saves the embeddings into a csv format and saves it in the same folder as input mp4 file.
-
-# requirements: It needs the OpenFace bin folder (and all the model files) in OpenFaceBin folder at the same level as this directory
-# It also need the fab net model downloaded from http://www.robots.ox.ac.uk/~vgg/research/unsup_learn_watch_faces/release_bmvc_fabnet.zip and kept in release folder"""
+"""
 
 if __name__ == '__main__':
 
     #read all the txt file
-    #bs_fldr = '/data_efs/home/shruti/voxceleb/videos/vox2_mp4/dev/mp4'
-    bs_fldr = '/data/home/shruti/voxceleb/videos/leaders'
-    paths_file = 'data_leaders_full'
+    bs_fldr = '/data/home/shruti/voxceleb/videos/vox2_test_mp4/mp4'
+    #bs_fldr = '/data/home/shruti/voxceleb/videos/leaders'
+    paths_file = 'vox_test_full'
     part_num = 1
 
     # collect all the video files to process

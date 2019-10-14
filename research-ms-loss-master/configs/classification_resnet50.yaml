@@ -27,12 +27,12 @@ INPUT:
   FRAME_LENGTH: 150 # the number of frames to consider (30 fps frame rate for leaders and 25 for voxceleb) 
 
 # Checkpoint save dir
-SAVE_DIR: /data/home/shruti/voxceleb/mdls_ldrs_clasifictn/
+SAVE_DIR: /data/home/shruti/voxceleb/mdls_ldrs_clss_resnet50_00001
 
 # Model parameters
 MODEL:
   BACKBONE:
-    NAME: vgg16_bn #alexnet #vgg16_bn
+    NAME: resnet50 #alexnet #vgg16_bn
     LR_MUL: 1.0
   HEAD:
     NAME: linear_norm
@@ -44,10 +44,10 @@ MODEL:
   PRETRIANED_PATH: /data/home/shruti/voxceleb/mdls_ldrs_clasifictn/best_model.pth
 
 SOLVER:
-  MAX_ITERS: 500000
+  MAX_ITERS: 50000
   STEPS: [50000]
   OPTIMIZER_NAME: Adam
-  BASE_LR: 0.00003
+  BASE_LR: 0.00001
   WARMUP_ITERS: 0
   WEIGHT_DECAY: 0.0005
   

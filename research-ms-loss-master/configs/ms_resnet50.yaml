@@ -23,31 +23,31 @@ INPUT:
   STD: /data/home/shruti/voxceleb/fabnet/leaders/leaders_150_std.npy
   DATA_LOADER: FabNet
   SAMPLER: random_identity_sampler
-  EVAL: accuracy
+  EVAL: recall_at_k
   FRAME_LENGTH: 150 # the number of frames to consider (30 fps frame rate for leaders and 25 for voxceleb) 
 
 # Checkpoint save dir
-SAVE_DIR: /data/home/shruti/voxceleb/mdls_ldrs_clasifictn/
+SAVE_DIR: /data/home/shruti/voxceleb/mdls_ldrs_ms_resnet50_0001
 
 # Model parameters
 MODEL:
   BACKBONE:
-    NAME: vgg16_bn #alexnet #vgg16_bn
+    NAME: resnet50 #alexnet #vgg16_bn
     LR_MUL: 1.0
   HEAD:
     NAME: linear_norm
-    DIM: 10
+    DIM: 256
     IN_CHANNEL: 1024 #1024 # alexnet # 1024 # vggnet
     LR_MUL: 1.0
     
-  PRETRAIN: none
-  PRETRIANED_PATH: /data/home/shruti/voxceleb/mdls_ldrs_clasifictn/best_model.pth
+  PRETRAIN: 'classification'
+  PRETRIANED_PATH: /data/home/shruti/voxceleb/mdls_ldrs_clss_resnet50_0001/best_model.pth
 
 SOLVER:
-  MAX_ITERS: 500000
+  MAX_ITERS: 50000
   STEPS: [50000]
   OPTIMIZER_NAME: Adam
-  BASE_LR: 0.00003
+  BASE_LR: 0.0001
   WARMUP_ITERS: 0
   WEIGHT_DECAY: 0.0005
   
@@ -56,7 +56,7 @@ VALIDATION:
 
 # Output, Loss
 LOSSES:
-  NAME: ce_loss
+  NAME: ms_loss
   # ms loss params
   MULTI_SIMILARITY_LOSS:
     SCALE_POS: 2.0

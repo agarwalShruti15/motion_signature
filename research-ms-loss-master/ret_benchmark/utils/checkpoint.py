@@ -21,8 +21,7 @@ class Checkpointer(object):
         self.scheduler = scheduler
         self.save_dir = save_dir
         self.save_to_disk = save_to_disk
-        if save_to_disk:
-            os.makedirs(save_dir, exist_ok=True)
+        os.makedirs(save_dir, exist_ok=True)
         if logger is None:
             logger = logging.getLogger(__name__)
         self.logger = logger

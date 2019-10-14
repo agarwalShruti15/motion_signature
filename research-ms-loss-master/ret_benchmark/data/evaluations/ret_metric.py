@@ -12,6 +12,7 @@ from ret_benchmark.data.registry import EVAL
 class RetMetric(object):
     
     def init_feat(self, feats, labels):
+        
         if len(feats) == 2 and type(feats) == list:
             """
             feats = [gallery_feats, query_feats]
@@ -36,7 +37,7 @@ class RetMetric(object):
         labels = kargs['labels']
         k = kargs['k']
         
-        self.init_feat(self, feats, labels)
+        self.init_feat(feats, labels)
         
         m = len(self.sim_mat)
 

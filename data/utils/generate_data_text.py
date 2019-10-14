@@ -35,6 +35,35 @@ def get_leader_file(bsfldr, T):
         print(subfldrs[i], labels[i], len(label_file_dict[labels[i]]))    
     return label_file_dict
 
+def get_voxceleb_file(bsfldr, T):
+    
+    all_files = np.array([np.array([f[:7], f]) for f in os.listdir(bsfldr) if f.endswith('.npy')])
+        
+    # the first 7 letters are of the ids, this is used as labels 
+    [uniq_labels, uniq_ids, uniq_cnts] = np.unique(all_files[:, 0], return_inverse=True, return_counts=True)
+    print(f'number of labels {len(uniq_labels)}')
+    
+    # create the dictionary
+    label_file_dict = {}
+    for i in range(len(uniq_labels)):
+        
+        cur_lbl_file = all_files[uniq_ids==i, 1]
+        validx = np.zeros((len(cur_lbl_file), ), dtype=np.bool)
+        for j in range(len(cur_lbl_file)):
+            
+            if cur_lbl_file[j].endswith('.npy'): # consider only npy files
+                try:
+                    num_fr = len(np.load(os.path.join(bsfldr, cur_lbl_file[j]))) # assumpstion that frame is size[0]
+                    if num_fr>=T: # consider only when the frames are greater than T
+                        validx[j] = True                    
+                except Exception as e:
+                    print(f'error: {cur_lbl_file[j]} {e}')
+                    
+        label_file_dict[i] = cur_lbl_file[validx]
+        print(f'id: {uniq_labels[i]} lbl: {i} len: {len(label_file_dict[i])}')
+
+    return label_file_dict
+
 def get_test_file(bsfldr, T):
     
     subfldrs = np.array(['bo'])
@@ -111,7 +140,7 @@ def bootstrap_mean_std(bsfldr, label_file_dict, s_n, s_sz):
     
     return np.mean(out_mean, axis=0), np.mean(out_std, axis=0)
 
-str2func = {'leaders': get_leader_file, 'test': get_test_file}
+str2func = {'leaders': get_leader_file, 'test': get_test_file, 'voxceleb': get_voxceleb_file}
 
 if __name__ == '__main__':
     
@@ -136,8 +165,9 @@ if __name__ == '__main__':
     label_file_dict = str2func[func](bsfldr, T)
     
     if comp_mean == 'Y':
+        print('computing mean/std')
         # compute the mean and std of the files via bootrapping 
-        [mean, std] = bootstrap_mean_std(bsfldr, label_file_dict, s_n = 100, s_sz = 10)
+        [mean, std] = bootstrap_mean_std(bsfldr, label_file_dict, s_n = 50, s_sz = 5)
         # mean and standard deviation file save
         np.save(os.path.join(bsfldr, outfile + f'_{T}_mean.npy'), mean)
         np.save(os.path.join(bsfldr, outfile + f'_{T}_std.npy'), std)

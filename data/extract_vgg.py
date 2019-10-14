@@ -9,12 +9,12 @@ import numpy as np
 from vggface_model import VGG_16
 
 """
-Usage: python -W ignore extract_subset_fabnet.py --bsfldr '/data/home/shruti/voxceleb/videos/vox2_mp4/dev/mp4' --ofd '/data/home/shruti/voxceleb/fabnet/vox2_mp4' --njobs 60 --openface 'OpenFace-master/build/bin' --fnmodel 'release/nv2_curriculum.pth' --path_file 'utils/data_subset_0.txt' > out 2>error
+Usage: python -W ignore extract_subset_fabnet.py --bsfldr '/data/home/shruti/voxceleb/videos/vox2_mp4/dev/mp4' --ofd '/data/home/shruti/voxceleb/vgg/vox2_mp4' --njobs 60 --openface 'OpenFace-master/build/bin' --fnmodel 'VGG_FACE.t7' --path_file 'utils/data_subset_0.txt'
 
 this file extracts the face embeddings for each mp4 file present in the base directory and sub directories. It saves the embeddings into a csv format and saves it in the same folder as input mp4 file.
 
 # requirements: It needs the OpenFace bin folder (and all the model files) in OpenFaceBin folder at the same level as this directory
-# It also need the fab net model downloaded from http://www.robots.ox.ac.uk/~vgg/research/unsup_learn_watch_faces/release_bmvc_fabnet.zip and kept in release folder"""
+# It also need the vgg net model downloaded from http://www.robots.ox.ac.uk/~vgg/software/vgg_face/  kept in the folder"""
 
 num_additional_ids=32
 
