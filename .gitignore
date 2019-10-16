@@ -8,3 +8,6 @@ wingPro7.wpr
 wingPro7.wpu
 **__pycache__/
 data/id0*
+data/VGG_FACE.t7
+**.ipynb_checkpoints/
+research-ms-loss-master/obj/

@@ -36,5 +36,5 @@ def build_model(cfg):
     elif cfg.MODEL.PRETRAIN == 'resume':
         print('Resuming from model ...')
         ckp = torch.load(os.path.expanduser(cfg.MODEL.PRETRIANED_PATH))
-        model.load_state_dict(ckp['model_state_dict'])
+        model.load_state_dict(ckp['model'])
     return model

@@ -64,6 +64,53 @@ def get_voxceleb_file(bsfldr, T):
 
     return label_file_dict
 
+def get_vgg_leader_file(bsfldr, T):
+    
+    # TODO: This is a HACK1 because the labels have same prefix
+    base_vid_fldr = '/data/home/shruti/voxceleb/videos/leaders/'
+    
+    subfldrs = np.array(['bo', 'br', 'bs', 'cb', 'dt_week', 'dt_rndm', 'ew', 'hc', 'jb', 'kh', 'pb'])
+    fldr2lbl = {'bo': 0, 'br': 1, 'bs': 2, 'cb': 3, 'dt_week': 4, 'dt_rndm': 4, 'ew': 5, 'hc': 6, 'jb': 7, 'kh': 8, 'pb': 9}
+    
+    all_files = []
+    for s in subfldrs:
+        
+        all_files.extend([ np.array([s, s + '_' + os.path.splitext(f)[0] + '.npy']) for 
+                           f in os.listdir(os.path.join(base_vid_fldr, s)) if f.endswith('.mp4') ])
+    
+    all_files = np.array(all_files)
+    # the first 7 letters are of the ids, this is used as labels 
+    [uniq_labels, uniq_ids, uniq_cnts] = np.unique(all_files[:, 0], return_inverse=True, return_counts=True)
+    print(f'number of labels {len(uniq_labels)}')
+    
+    # create the dictionary
+    label_file_dict = {}
+    for i in range(len(uniq_labels)):
+        
+        cur_lbl_file = all_files[uniq_ids==i, 1]
+        validx = np.zeros((len(cur_lbl_file), ), dtype=np.bool)
+        for j in range(len(cur_lbl_file)):
+            
+            if cur_lbl_file[j].endswith('.npy'): # consider only npy files
+                try:
+                    num_fr = np.load(os.path.join(bsfldr, cur_lbl_file[j])).shape # assumpstion that frame is size[0]
+                    if num_fr[0]>=T and num_fr[1]==4096: # consider only when the frames are greater than T
+                        validx[j] = True
+                    else:
+                        if num_fr[1]!=4096:
+                            print(f'error: {cur_lbl_file[j]} {num_fr}')
+                except Exception as e:
+                    print(f'error: {cur_lbl_file[j]} {e}')
+        
+        if fldr2lbl[uniq_labels[i]] not in label_file_dict.keys():
+            label_file_dict[fldr2lbl[uniq_labels[i]]] = cur_lbl_file[validx]
+        else:
+            np.concatenate((label_file_dict[fldr2lbl[uniq_labels[i]]], cur_lbl_file[validx]), axis=0)
+        
+        print(f'id: {uniq_labels[i]} lbl: {fldr2lbl[uniq_labels[i]]} len: {len(label_file_dict[fldr2lbl[uniq_labels[i]]])}')
+
+    return label_file_dict
+
 def get_test_file(bsfldr, T):
     
     subfldrs = np.array(['bo'])
@@ -140,7 +187,7 @@ def bootstrap_mean_std(bsfldr, label_file_dict, s_n, s_sz):
     
     return np.mean(out_mean, axis=0), np.mean(out_std, axis=0)
 
-str2func = {'leaders': get_leader_file, 'test': get_test_file, 'voxceleb': get_voxceleb_file}
+str2func = {'leaders': get_leader_file, 'test': get_test_file, 'voxceleb': get_voxceleb_file, 'vgg_leader': get_vgg_leader_file}
 
 if __name__ == '__main__':
     
