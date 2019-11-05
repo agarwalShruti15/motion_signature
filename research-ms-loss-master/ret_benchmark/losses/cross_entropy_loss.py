@@ -13,3 +13,7 @@ from ret_benchmark.losses.registry import LOSS
 class CrossEntropyLoss(nn.CrossEntropyLoss):
     def __init__(self, cfg):
         super(CrossEntropyLoss, self).__init__()
+        
+    def forward(self, feats, in_labels):
+        labels = in_labels.squeeze()
+        return super().forward(feats, labels)

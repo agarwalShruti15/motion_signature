@@ -16,7 +16,7 @@ def feat_extractor(model, data_loader, logger=None):
 
     for i, batch in enumerate(data_loader):
         imgs = batch[0].cuda()
-        lbls = batch[1].numpy()[:, np.newaxis]
+        lbls = batch[1].numpy()
         
         with torch.no_grad():
             out = model(imgs).data.cpu().numpy()
@@ -27,4 +27,6 @@ def feat_extractor(model, data_loader, logger=None):
             logger.debug(f'Extract Features: [{i + 1}/{len(data_loader)}]')
         del out
     feats = np.vstack(feats)
-    return feats, np.concatenate(labels, axis=0).ravel()
+    #print(feats[0, :10], np.concatenate(labels, axis=0))
+    #print(feats[0, :5], np.concatenate(labels, axis=0)[0, :5])
+    return feats, np.concatenate(labels, axis=0)

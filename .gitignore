@@ -11,3 +11,6 @@ data/id0*
 data/VGG_FACE.t7
 **.ipynb_checkpoints/
 research-ms-loss-master/obj/
+**/*.pkl
+data/.nfs*
+baseline/results*

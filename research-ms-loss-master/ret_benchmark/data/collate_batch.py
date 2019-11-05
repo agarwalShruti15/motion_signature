@@ -6,10 +6,10 @@
 # This source code is licensed under the LICENSE file in the root directory of this source tree.
 
 import torch
-
+import numpy as np
 
 def collate_fn(batch):
     imgs, labels = zip(*batch)
-    labels = [int(k) for k in labels]
-    labels = torch.tensor(labels, dtype=torch.int64)
+    labels = np.vstack(labels) #[int(k) for k in labels]
+    labels = torch.tensor(labels) #torch.tensor(labels, dtype=torch.int64)
     return torch.stack(imgs, dim=0), labels

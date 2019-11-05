@@ -14,7 +14,6 @@ class StandardScalar(object):
         
         # unit length the input
         norm1 = input/ np.linalg.norm(input, axis=1, keepdims=True)
-        #after = norm1*255 # just to make it image scale
         
         after = (norm1 - self.mean)/self.std
         

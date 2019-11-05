@@ -6,6 +6,9 @@
 # This source code is licensed under the LICENSE file in the root directory of this source tree.
 from ret_benchmark.data.registry import DATA_LOADER
 from .fabnet import FabNetDataLoader
+from .aus190_lbl import AUS190_LBLDataLoader
+from .aus_190aus import AUS2_190ausDataLoader
+from .fabnet_190aus import FabNet2_190ausDataLoader
 
 def build_data_loader(cfg, is_train, transforms):
     

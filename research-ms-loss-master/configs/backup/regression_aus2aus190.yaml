@@ -1,0 +1,67 @@
+# Copyright (c) Malong Technologies Co., Ltd.
+# All rights reserved.
+#
+# Contact: github@malong.com
+#
+# This source code is licensed under the LICENSE file in the root directory of this source tree.
+
+# Data option
+CODE_PATH: /data/home/shruti/voxceleb/motion_signature/research-ms-loss-master/
+
+DATA:
+  TRAIN_IMG_SOURCE: /data/home/shruti/voxceleb/aus/leaders/leaders_100_train.txt
+  TEST_IMG_SOURCE: /data/home/shruti/voxceleb/aus/leaders/leaders_100_val.txt
+  TRAIN_BATCHSIZE: 50
+  TEST_BATCHSIZE: 20
+  NUM_WORKERS: 15 #number of data loader workers
+  NUM_INSTANCES: 5 # number of instances per label in one batch
+
+# Input option
+INPUT:
+  TRANSFORM: standard_scalar
+  MEAN: /data/home/shruti/voxceleb/aus/leaders/leaders_100_mean.npy
+  STD: /data/home/shruti/voxceleb/aus/leaders/leaders_100_std.npy
+  SAMPLER: random_identity_sampler
+  EVAL: l1_loss
+  DATA_LOADER: aus_190aus
+  DIM1: 100
+  DIM2: 20
+  FRAME_LENGTH: 100 # the number of frames to consider (30 fps frame rate for leaders and 25 for voxceleb) 
+
+# Checkpoint save dir
+SAVE_DIR: /data/home/shruti/voxceleb/regression_aus2aus190_BS50
+
+# Model parameters
+MODEL:
+  BACKBONE:
+    NAME: only_fc #resnet18 #resnet50 #alexnet #vgg16_bn #asym_resnet50 #asym_alexnet
+    LR_MUL: 1.0
+  HEAD:
+    NAME: linear_only
+    DIM: 190
+    IN_CHANNEL: 512 #1024 # alexnet # 1024 # vggnet
+    LR_MUL: 1.0
+    
+  PRETRAIN: none
+  PRETRIANED_PATH: /data/home/shruti/voxceleb/
+
+SOLVER:
+  MAX_ITERS: 100000
+  STEPS: [50000]
+  OPTIMIZER_NAME: Adam
+  BASE_LR: 0.0001
+  WARMUP_ITERS: 0
+  WEIGHT_DECAY: 0.0005
+  CHECKPOINT_PERIOD: 200
+  
+VALIDATION:
+  VERBOSE: 200
+
+# Output, Loss
+LOSSES:
+  NAME: l1_loss
+  # ms loss params
+  MULTI_SIMILARITY_LOSS:
+    SCALE_POS: 2.0
+    SCALE_NEG: 40.0
+    HARD_MINING: True

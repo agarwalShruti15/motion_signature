@@ -37,7 +37,7 @@ class RetMetric(object):
         labels = kargs['labels']
         k = kargs['k']
         
-        self.init_feat(feats, labels)
+        self.init_feat(feats, labels.ravel())
         
         m = len(self.sim_mat)
 

@@ -29,3 +29,5 @@ def build_lr_scheduler(cfg, optimizer):
         warmup_iters=cfg.SOLVER.WARMUP_ITERS,
         warmup_method=cfg.SOLVER.WARMUP_METHOD,
     )
+    
+    #return torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', patience=5, factor=cfg.SOLVER.GAMMA)    

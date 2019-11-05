@@ -8,7 +8,7 @@
 from .multi_similarity_loss import MultiSimilarityLoss
 from .cross_entropy_loss import CrossEntropyLoss
 from .registry import LOSS
-
+from .l1_loss import L1Loss
 
 def build_loss(cfg):
     loss_name = cfg.LOSSES.NAME

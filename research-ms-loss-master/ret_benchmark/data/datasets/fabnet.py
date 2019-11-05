@@ -76,7 +76,6 @@ class FabNetDataLoader(Dataset):
         index_dict = defaultdict(list)
         for i, label in enumerate(self.label_list):
             index_dict[label].append(i)
-        print(len(index_dict.keys()))
         return index_dict
 
     def __getitem__(self, index):
@@ -101,4 +100,4 @@ class FabNetDataLoader(Dataset):
         if self.transforms is not None:
             img = self.transforms(img)
         
-        return img.float(), label
+        return img.float(), np.int64(label)

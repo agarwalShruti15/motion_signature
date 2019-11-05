@@ -9,7 +9,7 @@ from ret_benchmark.modeling import registry
 @registry.BACKBONES.register('bninception')
 class BNInception(nn.Module):
 
-    def __init__(self):
+    def __init__(self, cfg):
         super(BNInception, self).__init__()
         inplace = True
         self.conv1_7x7_s2 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3))
@@ -186,7 +186,7 @@ class BNInception(nn.Module):
         self.inception_4e_double_3x3_2 = nn.Conv2d(256, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
         self.inception_4e_double_3x3_2_bn = nn.BatchNorm2d(256, affine=True)
         self.inception_4e_relu_double_3x3_2 = nn.ReLU(inplace)
-        self.inception_4e_pool = nn.MaxPool2d((3, 3), stride=(2, 2), dilation=(1, 1), padding=(1, 0), ceil_mode=True)
+        self.inception_4e_pool = nn.MaxPool2d((3, 3), stride=(2, 2), dilation=(1, 1), ceil_mode=True)
         self.inception_5a_1x1 = nn.Conv2d(1056, 352, kernel_size=(1, 1), stride=(1, 1))
         self.inception_5a_1x1_bn = nn.BatchNorm2d(352, affine=True)
         self.inception_5a_relu_1x1 = nn.ReLU(inplace)

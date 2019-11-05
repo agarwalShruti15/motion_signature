@@ -15,13 +15,14 @@ from ret_benchmark.losses.registry import LOSS
 class MultiSimilarityLoss(nn.Module):
     def __init__(self, cfg):
         super(MultiSimilarityLoss, self).__init__()
-        self.thresh = 0.5
-        self.margin = 0.1
+        self.thresh = cfg.LOSSES.MULTI_SIMILARITY_LOSS.THRESH #0.5
+        self.margin = cfg.LOSSES.MULTI_SIMILARITY_LOSS.MARGIN #0.1
 
         self.scale_pos = cfg.LOSSES.MULTI_SIMILARITY_LOSS.SCALE_POS
         self.scale_neg = cfg.LOSSES.MULTI_SIMILARITY_LOSS.SCALE_NEG
 
-    def forward(self, feats, labels):
+    def forward(self, feats, in_labels):
+        labels = in_labels.squeeze()
         assert feats.size(0) == labels.size(0), \
             f"feats.size(0): {feats.size(0)} is not equal to labels.size(0): {labels.size(0)}"
         batch_size = feats.size(0)

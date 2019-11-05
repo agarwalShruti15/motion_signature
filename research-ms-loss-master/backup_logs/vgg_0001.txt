@@ -1,0 +1,59 @@
+2019-10-17 23:03:22,913 Train INFO: CODE_PATH: /data/home/shruti/voxceleb/motion_signature/research-ms-loss-master/
+DATA:
+  NUM_INSTANCES: 3
+  NUM_WORKERS: 20
+  TEST_BATCHSIZE: 20
+  TEST_IMG_SOURCE: /data/home/shruti/voxceleb/vgg/leaders/leaders_150_test.txt
+  TRAIN_BATCHSIZE: 30
+  TRAIN_IMG_SOURCE: /data/home/shruti/voxceleb/vgg/leaders/leaders_150_train.txt
+INPUT:
+  DATA_LOADER: FabNet
+  EVAL: accuracy
+  FRAME_LENGTH: 45
+  MEAN: /data/home/shruti/voxceleb/vgg/leaders/leaders_150_mean.npy
+  SAMPLER: random_identity_sampler
+  STD: /data/home/shruti/voxceleb/vgg/leaders/leaders_150_std.npy
+  TRANSFORM: standard_scalar
+LOGGER:
+  LEVEL: 20
+  STREAM: stdout
+LOSSES:
+  MULTI_SIMILARITY_LOSS:
+    HARD_MINING: True
+    SCALE_NEG: 40.0
+    SCALE_POS: 2.0
+  NAME: ce_loss
+MODEL:
+  BACKBONE:
+    LR_MUL: 1.0
+    NAME: resnet50
+  DEVICE: cuda
+  HEAD:
+    DIM: 10
+    IN_CHANNEL: 1024
+    LR_MUL: 1.0
+    NAME: linear_norm
+  PRETRAIN: none
+  PRETRIANED_PATH: /data/home/shruti/voxceleb/mdls_ldrs_clasifictn/best_model.pth
+  WEIGHT: 
+SAVE_DIR: /data/home/shruti/voxceleb/mdls_ldrs_clss_resnet50__vgg_0001
+SOLVER:
+  BASE_LR: 0.0001
+  BIAS_LR_FACTOR: 1
+  CHECKPOINT_PERIOD: 10000
+  FINETURN_MODE_PATH: 
+  GAMMA: 0.1
+  IS_FINETURN: False
+  MAX_ITERS: 100000
+  MOMENTUM: 0.9
+  OPTIMIZER_NAME: Adam
+  RNG_SEED: 1
+  STEPS: [50000]
+  WARMUP_FACTOR: 0.01
+  WARMUP_ITERS: 0
+  WARMUP_METHOD: linear
+  WEIGHT_DECAY: 0.0005
+  WEIGHT_DECAY_BIAS: 0.0005
+VALIDATION:
+  IS_VALIDATION: True
+  VERBOSE: 200

@@ -1,0 +1,261 @@
+2019-10-28 08:19:29,104 Train INFO: CODE_PATH: /data/home/shruti/voxceleb/motion_signature/research-ms-loss-master/
+DATA:
+  NUM_INSTANCES: 5
+  NUM_WORKERS: 20
+  TEST_BATCHSIZE: 20
+  TEST_IMG_SOURCE: /data/home/shruti/voxceleb/aus/leaders/leaders_100_val.txt
+  TRAIN_BATCHSIZE: 50
+  TRAIN_IMG_SOURCE: /data/home/shruti/voxceleb/aus/leaders/leaders_100_train.txt
+INPUT:
+  DATA_LOADER: FabNet
+  EVAL: accuracy
+  FRAME_LENGTH: 100
+  MEAN: /data/home/shruti/voxceleb/aus/leaders/leaders_300_mean.npy
+  SAMPLER: random_identity_sampler
+  STD: /data/home/shruti/voxceleb/aus/leaders/leaders_300_std.npy
+  TRANSFORM: standard_scalar_norm
+LOGGER:
+  LEVEL: 20
+  STREAM: stdout
+LOSSES:
+  MULTI_SIMILARITY_LOSS:
+    HARD_MINING: True
+    SCALE_NEG: 40.0
+    SCALE_POS: 2.0
+  NAME: ce_loss
+MODEL:
+  BACKBONE:
+    LR_MUL: 1.0
+    NAME: resnet18
+  DEVICE: cuda
+  HEAD:
+    DIM: 10
+    IN_CHANNEL: 1024
+    LR_MUL: 1.0
+    NAME: linear_norm
+  PRETRAIN: none
+  PRETRIANED_PATH: /data/home/shruti/voxceleb/
+  WEIGHT: 
+SAVE_DIR: /data/home/shruti/voxceleb/aus_ldrs_clss_T100_resnet18_norm
+SOLVER:
+  BASE_LR: 3e-05
+  BIAS_LR_FACTOR: 1
+  CHECKPOINT_PERIOD: 10000
+  FINETURN_MODE_PATH: 
+  GAMMA: 0.1
+  IS_FINETURN: False
+  MAX_ITERS: 3000
+  MOMENTUM: 0.9
+  OPTIMIZER_NAME: Adam
+  RNG_SEED: 1
+  STEPS: [100000]
+  WARMUP_FACTOR: 0.01
+  WARMUP_ITERS: 0
+  WARMUP_METHOD: linear
+  WEIGHT_DECAY: 0.0005
+  WEIGHT_DECAY_BIAS: 0.0005
+VALIDATION:
+  IS_VALIDATION: True
+  VERBOSE: 200
+10
+10
+2019-10-28 08:19:37,710 Train INFO: | Dataset Info |datasize: 3289|num_labels: 10|
+2019-10-28 08:19:37,710 Train INFO: | Dataset Info |datasize: 407|num_labels: 10|
+2019-10-28 08:19:37,713 Train INFO: Start training
+2019-10-28 08:19:39,381 Train INFO: Validation
+[3 7 3 3 7 3 7 3 3 7 3 3 3 3 7 3 3 3 7 3] [1 8 7 1 5 2 4 6 4 9 6 0 0 0 2 4 1 4 4 4]
+2019-10-28 08:19:41,106 Train INFO: Best iteration 0: accuracy: 0.074
+2019-10-28 08:19:42,645 Train INFO: eta: 0:12:14  iter: 20  time: 0.0396 (0.2466)  data: 0.0009 (0.2070)  loss: 2.2990 (2.3039)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:19:43,482 Train INFO: eta: 0:07:06  iter: 40  time: 0.0413 (0.1442)  data: 0.0009 (0.1040)  loss: 2.2840 (2.2942)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:19:44,320 Train INFO: eta: 0:05:23  iter: 60  time: 0.0423 (0.1101)  data: 0.0009 (0.0697)  loss: 2.2113 (2.2641)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:19:45,166 Train INFO: eta: 0:04:32  iter: 80  time: 0.0418 (0.0932)  data: 0.0009 (0.0526)  loss: 2.1442 (2.2350)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:19:46,002 Train INFO: eta: 0:04:00  iter: 100  time: 0.0417 (0.0829)  data: 0.0009 (0.0423)  loss: 2.1368 (2.2174)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:19:46,886 Train INFO: eta: 0:03:40  iter: 120  time: 0.0414 (0.0764)  data: 0.0009 (0.0355)  loss: 2.1236 (2.2010)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:19:47,732 Train INFO: eta: 0:03:24  iter: 140  time: 0.0422 (0.0716)  data: 0.0009 (0.0306)  loss: 2.0771 (2.1842)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:19:48,593 Train INFO: eta: 0:03:13  iter: 160  time: 0.0426 (0.0680)  data: 0.0009 (0.0269)  loss: 2.0881 (2.1721)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:19:49,445 Train INFO: eta: 0:03:03  iter: 180  time: 0.0416 (0.0652)  data: 0.0009 (0.0240)  loss: 2.0976 (2.1626)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:19:50,286 Train INFO: eta: 0:02:56  iter: 200  time: 0.0411 (0.0629)  data: 0.0009 (0.0217)  loss: 2.0682 (2.1526)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:19:50,287 Train INFO: Validation
+[9 4 2 0 8 1 6 5 0 2 6 9 9 5 5 7 6 4 3 7] [5 4 2 0 0 4 3 2 0 4 6 9 3 2 4 4 8 4 1 0]
+2019-10-28 08:19:51,985 Train INFO: Best iteration 200: accuracy: 0.248
+2019-10-28 08:19:54,058 Train INFO: eta: 0:03:26  iter: 220  time: 0.0407 (0.0743)  data: 0.0009 (0.0333)  loss: 2.0849 (2.1467)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:19:54,884 Train INFO: eta: 0:03:17  iter: 240  time: 0.0412 (0.0715)  data: 0.0009 (0.0306)  loss: 2.0498 (2.1392)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:19:55,744 Train INFO: eta: 0:03:10  iter: 260  time: 0.0429 (0.0693)  data: 0.0009 (0.0284)  loss: 2.0536 (2.1327)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:19:56,622 Train INFO: eta: 0:03:03  iter: 280  time: 0.0420 (0.0675)  data: 0.0010 (0.0264)  loss: 2.0337 (2.1260)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:19:57,450 Train INFO: eta: 0:02:57  iter: 300  time: 0.0408 (0.0658)  data: 0.0009 (0.0247)  loss: 2.0438 (2.1209)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:19:58,325 Train INFO: eta: 0:02:52  iter: 320  time: 0.0421 (0.0644)  data: 0.0010 (0.0233)  loss: 2.0459 (2.1163)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:19:59,157 Train INFO: eta: 0:02:47  iter: 340  time: 0.0412 (0.0631)  data: 0.0009 (0.0220)  loss: 2.0238 (2.1116)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:00,018 Train INFO: eta: 0:02:43  iter: 360  time: 0.0422 (0.0620)  data: 0.0009 (0.0208)  loss: 2.0176 (2.1071)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:00,864 Train INFO: eta: 0:02:39  iter: 380  time: 0.0416 (0.0609)  data: 0.0009 (0.0198)  loss: 2.0159 (2.1027)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:01,714 Train INFO: eta: 0:02:35  iter: 400  time: 0.0419 (0.0600)  data: 0.0009 (0.0189)  loss: 2.0228 (2.0986)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:01,714 Train INFO: Validation
+[0 1 1 0 9 6 4 8 2 2 4 0 2 1 4 8 3 9 6 7] [0 4 2 0 2 3 4 0 7 0 7 0 4 3 4 6 9 5 9 7]
+2019-10-28 08:20:03,388 Train INFO: Best iteration 400: accuracy: 0.391
+2019-10-28 08:20:05,605 Train INFO: eta: 0:02:51  iter: 420  time: 0.0387 (0.0664)  data: 0.0009 (0.0254)  loss: 2.0332 (2.0954)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:06,456 Train INFO: eta: 0:02:47  iter: 440  time: 0.0417 (0.0653)  data: 0.0010 (0.0243)  loss: 2.0355 (2.0923)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:07,337 Train INFO: eta: 0:02:43  iter: 460  time: 0.0431 (0.0644)  data: 0.0012 (0.0233)  loss: 2.0224 (2.0894)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:08,159 Train INFO: eta: 0:02:39  iter: 480  time: 0.0410 (0.0634)  data: 0.0009 (0.0224)  loss: 2.0119 (2.0869)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:09,002 Train INFO: eta: 0:02:36  iter: 500  time: 0.0420 (0.0626)  data: 0.0009 (0.0215)  loss: 2.0036 (2.0839)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:09,877 Train INFO: eta: 0:02:33  iter: 520  time: 0.0437 (0.0619)  data: 0.0009 (0.0207)  loss: 2.0209 (2.0815)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:10,716 Train INFO: eta: 0:02:30  iter: 540  time: 0.0424 (0.0611)  data: 0.0009 (0.0200)  loss: 2.0113 (2.0790)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:11,567 Train INFO: eta: 0:02:27  iter: 560  time: 0.0420 (0.0605)  data: 0.0009 (0.0193)  loss: 2.0161 (2.0769)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:12,387 Train INFO: eta: 0:02:24  iter: 580  time: 0.0410 (0.0598)  data: 0.0009 (0.0187)  loss: 1.9992 (2.0744)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:13,232 Train INFO: eta: 0:02:22  iter: 600  time: 0.0417 (0.0592)  data: 0.0009 (0.0181)  loss: 2.0072 (2.0722)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:13,233 Train INFO: Validation
+[2 0 7 5 2 6 0 0 9 1 9 4 5 4 4 5 9 7 4 2] [2 4 2 9 4 0 0 6 4 1 0 4 9 4 4 1 1 7 7 2]
+2019-10-28 08:20:14,949 Train INFO: accuracy at iteration 000600: 0.359
+2019-10-28 08:20:15,743 Train INFO: eta: 0:02:25  iter: 620  time: 0.0393 (0.0613)  data: 0.0009 (0.0203)  loss: 1.9994 (2.0698)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:16,655 Train INFO: eta: 0:02:23  iter: 640  time: 0.0436 (0.0608)  data: 0.0010 (0.0198)  loss: 2.0065 (2.0678)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:17,524 Train INFO: eta: 0:02:21  iter: 660  time: 0.0406 (0.0603)  data: 0.0009 (0.0192)  loss: 1.9750 (2.0654)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:18,379 Train INFO: eta: 0:02:18  iter: 680  time: 0.0406 (0.0598)  data: 0.0009 (0.0187)  loss: 1.9820 (2.0630)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:19,296 Train INFO: eta: 0:02:16  iter: 700  time: 0.0440 (0.0594)  data: 0.0009 (0.0182)  loss: 1.9567 (2.0605)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:20,131 Train INFO: eta: 0:02:14  iter: 720  time: 0.0414 (0.0589)  data: 0.0009 (0.0177)  loss: 1.9783 (2.0584)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:20,989 Train INFO: eta: 0:02:12  iter: 740  time: 0.0414 (0.0585)  data: 0.0009 (0.0172)  loss: 1.9900 (2.0565)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:21,847 Train INFO: eta: 0:02:10  iter: 760  time: 0.0430 (0.0581)  data: 0.0010 (0.0168)  loss: 1.9792 (2.0543)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:22,680 Train INFO: eta: 0:02:07  iter: 780  time: 0.0407 (0.0576)  data: 0.0009 (0.0164)  loss: 1.9747 (2.0525)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:23,530 Train INFO: eta: 0:02:05  iter: 800  time: 0.0420 (0.0573)  data: 0.0009 (0.0160)  loss: 1.9844 (2.0509)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:23,531 Train INFO: Validation
+[2 3 9 7 5 8 5 5 3 9 1 4 5 9 6 8 9 7 4 5] [8 0 8 4 4 1 5 2 0 9 0 4 4 9 6 8 0 2 4 4]
+2019-10-28 08:20:25,222 Train INFO: accuracy at iteration 000800: 0.332
+2019-10-28 08:20:26,075 Train INFO: eta: 0:02:08  iter: 820  time: 0.0421 (0.0590)  data: 0.0010 (0.0177)  loss: 1.9865 (2.0496)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:26,937 Train INFO: eta: 0:02:06  iter: 840  time: 0.0416 (0.0586)  data: 0.0009 (0.0173)  loss: 1.9752 (2.0481)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:27,771 Train INFO: eta: 0:02:04  iter: 860  time: 0.0408 (0.0582)  data: 0.0009 (0.0170)  loss: 1.9910 (2.0467)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:28,617 Train INFO: eta: 0:02:02  iter: 880  time: 0.0422 (0.0578)  data: 0.0009 (0.0166)  loss: 1.9718 (2.0451)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:29,474 Train INFO: eta: 0:02:00  iter: 900  time: 0.0420 (0.0575)  data: 0.0010 (0.0163)  loss: 1.9740 (2.0437)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:30,352 Train INFO: eta: 0:01:59  iter: 920  time: 0.0432 (0.0572)  data: 0.0009 (0.0159)  loss: 1.9785 (2.0423)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:31,193 Train INFO: eta: 0:01:57  iter: 940  time: 0.0414 (0.0569)  data: 0.0009 (0.0156)  loss: 1.9804 (2.0408)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:32,014 Train INFO: eta: 0:01:55  iter: 960  time: 0.0408 (0.0566)  data: 0.0009 (0.0153)  loss: 1.9703 (2.0396)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:32,870 Train INFO: eta: 0:01:53  iter: 980  time: 0.0426 (0.0563)  data: 0.0009 (0.0150)  loss: 1.9720 (2.0384)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:33,717 Train INFO: eta: 0:01:52  iter: 1000  time: 0.0418 (0.0560)  data: 0.0009 (0.0148)  loss: 1.9724 (2.0371)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:33,718 Train INFO: Validation
+[3 9 3 8 5 6 7 1 5 4 5 9 4 5 4 0 3 2 4 4] [0 1 6 8 5 6 4 4 4 2 4 9 4 5 2 2 0 4 2 9]
+2019-10-28 08:20:35,381 Train INFO: Best iteration 1000: accuracy: 0.420
+2019-10-28 08:20:37,636 Train INFO: eta: 0:01:56  iter: 1020  time: 0.0406 (0.0587)  data: 0.0009 (0.0175)  loss: 1.9658 (2.0357)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:38,493 Train INFO: eta: 0:01:54  iter: 1040  time: 0.0421 (0.0584)  data: 0.0009 (0.0172)  loss: 1.9727 (2.0345)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:39,361 Train INFO: eta: 0:01:52  iter: 1060  time: 0.0422 (0.0582)  data: 0.0009 (0.0169)  loss: 1.9536 (2.0330)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:40,195 Train INFO: eta: 0:01:51  iter: 1080  time: 0.0415 (0.0579)  data: 0.0010 (0.0166)  loss: 1.9648 (2.0318)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:41,046 Train INFO: eta: 0:01:49  iter: 1100  time: 0.0426 (0.0576)  data: 0.0009 (0.0163)  loss: 1.9645 (2.0305)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:41,885 Train INFO: eta: 0:01:47  iter: 1120  time: 0.0411 (0.0573)  data: 0.0009 (0.0161)  loss: 1.9552 (2.0294)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:42,746 Train INFO: eta: 0:01:46  iter: 1140  time: 0.0424 (0.0570)  data: 0.0010 (0.0158)  loss: 1.9352 (2.0279)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:43,618 Train INFO: eta: 0:01:44  iter: 1160  time: 0.0414 (0.0568)  data: 0.0009 (0.0156)  loss: 1.9477 (2.0265)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:44,451 Train INFO: eta: 0:01:42  iter: 1180  time: 0.0408 (0.0566)  data: 0.0009 (0.0153)  loss: 1.9352 (2.0250)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:45,355 Train INFO: eta: 0:01:41  iter: 1200  time: 0.0427 (0.0564)  data: 0.0009 (0.0151)  loss: 1.9373 (2.0235)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:45,356 Train INFO: Validation
+[6 3 2 4 0 4 0 7 0 0 2 2 0 2 6 0 6 8 1 3] [9 3 8 4 0 2 0 2 0 0 2 2 0 4 9 0 4 2 0 3]
+2019-10-28 08:20:47,033 Train INFO: Best iteration 1200: accuracy: 0.486
+2019-10-28 08:20:49,506 Train INFO: eta: 0:01:44  iter: 1220  time: 0.0402 (0.0588)  data: 0.0009 (0.0176)  loss: 1.9413 (2.0222)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:50,382 Train INFO: eta: 0:01:43  iter: 1240  time: 0.0419 (0.0586)  data: 0.0009 (0.0173)  loss: 1.9296 (2.0209)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:51,251 Train INFO: eta: 0:01:41  iter: 1260  time: 0.0420 (0.0584)  data: 0.0009 (0.0171)  loss: 1.9430 (2.0195)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:52,115 Train INFO: eta: 0:01:39  iter: 1280  time: 0.0421 (0.0581)  data: 0.0009 (0.0168)  loss: 1.9369 (2.0182)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:52,944 Train INFO: eta: 0:01:38  iter: 1300  time: 0.0415 (0.0579)  data: 0.0009 (0.0166)  loss: 1.9153 (2.0167)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:53,774 Train INFO: eta: 0:01:36  iter: 1320  time: 0.0415 (0.0576)  data: 0.0009 (0.0163)  loss: 1.9203 (2.0153)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:54,634 Train INFO: eta: 0:01:35  iter: 1340  time: 0.0420 (0.0574)  data: 0.0009 (0.0161)  loss: 1.9355 (2.0141)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:55,494 Train INFO: eta: 0:01:33  iter: 1360  time: 0.0411 (0.0572)  data: 0.0009 (0.0159)  loss: 1.9148 (2.0126)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:56,320 Train INFO: eta: 0:01:32  iter: 1380  time: 0.0411 (0.0570)  data: 0.0009 (0.0157)  loss: 1.9287 (2.0114)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:57,153 Train INFO: eta: 0:01:30  iter: 1400  time: 0.0416 (0.0567)  data: 0.0009 (0.0155)  loss: 1.9273 (2.0101)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:20:57,154 Train INFO: Validation
+[0 7 6 8 8 6 7 4 8 0 5 3 3 0 4 0 0 2 4 3] [2 2 9 8 2 6 7 4 5 0 4 0 7 0 8 1 0 1 4 0]
+2019-10-28 08:20:58,816 Train INFO: Best iteration 1400: accuracy: 0.558
+2019-10-28 08:21:01,169 Train INFO: eta: 0:01:32  iter: 1420  time: 0.0415 (0.0588)  data: 0.0010 (0.0175)  loss: 1.9244 (2.0089)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:02,024 Train INFO: eta: 0:01:31  iter: 1440  time: 0.0433 (0.0585)  data: 0.0009 (0.0173)  loss: 1.9146 (2.0077)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:02,953 Train INFO: eta: 0:01:29  iter: 1460  time: 0.0460 (0.0584)  data: 0.0010 (0.0170)  loss: 1.9179 (2.0065)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:03,803 Train INFO: eta: 0:01:28  iter: 1480  time: 0.0421 (0.0582)  data: 0.0010 (0.0168)  loss: 1.9174 (2.0054)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:04,645 Train INFO: eta: 0:01:26  iter: 1500  time: 0.0413 (0.0580)  data: 0.0009 (0.0166)  loss: 1.9044 (2.0042)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:05,484 Train INFO: eta: 0:01:25  iter: 1520  time: 0.0416 (0.0577)  data: 0.0010 (0.0164)  loss: 1.9075 (2.0030)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:06,291 Train INFO: eta: 0:01:23  iter: 1540  time: 0.0398 (0.0575)  data: 0.0009 (0.0162)  loss: 1.9193 (2.0019)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:07,145 Train INFO: eta: 0:01:22  iter: 1560  time: 0.0426 (0.0573)  data: 0.0010 (0.0160)  loss: 1.9015 (2.0008)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:08,001 Train INFO: eta: 0:01:21  iter: 1580  time: 0.0410 (0.0571)  data: 0.0009 (0.0158)  loss: 1.9134 (1.9996)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:08,862 Train INFO: eta: 0:01:19  iter: 1600  time: 0.0430 (0.0570)  data: 0.0009 (0.0157)  loss: 1.9134 (1.9986)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:08,863 Train INFO: Validation
+[2 9 4 1 9 4 0 3 7 4 3 7 1 7 5 5 6 1 7 7] [4 0 4 0 6 4 0 0 7 4 3 0 0 4 2 2 6 6 4 7]
+2019-10-28 08:21:10,545 Train INFO: accuracy at iteration 001600: 0.504
+2019-10-28 08:21:11,386 Train INFO: eta: 0:01:19  iter: 1620  time: 0.0405 (0.0578)  data: 0.0009 (0.0165)  loss: 1.9076 (1.9975)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:12,264 Train INFO: eta: 0:01:18  iter: 1640  time: 0.0419 (0.0577)  data: 0.0009 (0.0163)  loss: 1.9134 (1.9965)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:13,115 Train INFO: eta: 0:01:17  iter: 1660  time: 0.0419 (0.0575)  data: 0.0009 (0.0161)  loss: 1.9012 (1.9954)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:13,945 Train INFO: eta: 0:01:15  iter: 1680  time: 0.0413 (0.0573)  data: 0.0009 (0.0160)  loss: 1.8958 (1.9944)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:14,802 Train INFO: eta: 0:01:14  iter: 1700  time: 0.0406 (0.0571)  data: 0.0009 (0.0158)  loss: 1.9127 (1.9935)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:15,655 Train INFO: eta: 0:01:12  iter: 1720  time: 0.0423 (0.0569)  data: 0.0009 (0.0156)  loss: 1.9041 (1.9925)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:16,483 Train INFO: eta: 0:01:11  iter: 1740  time: 0.0414 (0.0568)  data: 0.0009 (0.0155)  loss: 1.8876 (1.9913)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:17,340 Train INFO: eta: 0:01:10  iter: 1760  time: 0.0424 (0.0566)  data: 0.0009 (0.0153)  loss: 1.8891 (1.9902)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:18,196 Train INFO: eta: 0:01:08  iter: 1780  time: 0.0423 (0.0564)  data: 0.0009 (0.0151)  loss: 1.9029 (1.9893)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:19,043 Train INFO: eta: 0:01:07  iter: 1800  time: 0.0424 (0.0563)  data: 0.0010 (0.0150)  loss: 1.9147 (1.9884)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:19,043 Train INFO: Validation
+[7 6 4 0 3 3 3 9 4 4 7 0 0 4 7 6 0 0 0 2] [7 6 4 0 3 3 3 9 2 4 1 0 0 2 0 5 0 0 3 2]
+2019-10-28 08:21:20,694 Train INFO: Best iteration 1800: accuracy: 0.600
+2019-10-28 08:21:22,938 Train INFO: eta: 0:01:08  iter: 1820  time: 0.0412 (0.0578)  data: 0.0009 (0.0165)  loss: 1.9040 (1.9876)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:23,791 Train INFO: eta: 0:01:06  iter: 1840  time: 0.0415 (0.0576)  data: 0.0009 (0.0163)  loss: 1.9055 (1.9868)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:24,636 Train INFO: eta: 0:01:05  iter: 1860  time: 0.0421 (0.0575)  data: 0.0009 (0.0162)  loss: 1.9086 (1.9859)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:25,493 Train INFO: eta: 0:01:04  iter: 1880  time: 0.0419 (0.0573)  data: 0.0009 (0.0160)  loss: 1.8874 (1.9850)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:26,350 Train INFO: eta: 0:01:02  iter: 1900  time: 0.0404 (0.0572)  data: 0.0009 (0.0159)  loss: 1.9275 (1.9843)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:27,182 Train INFO: eta: 0:01:01  iter: 1920  time: 0.0408 (0.0570)  data: 0.0009 (0.0157)  loss: 1.8846 (1.9834)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:28,013 Train INFO: eta: 0:01:00  iter: 1940  time: 0.0411 (0.0569)  data: 0.0009 (0.0156)  loss: 1.9068 (1.9827)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:28,852 Train INFO: eta: 0:00:58  iter: 1960  time: 0.0410 (0.0567)  data: 0.0009 (0.0154)  loss: 1.8936 (1.9817)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:29,678 Train INFO: eta: 0:00:57  iter: 1980  time: 0.0411 (0.0565)  data: 0.0009 (0.0153)  loss: 1.9006 (1.9810)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:30,568 Train INFO: eta: 0:00:56  iter: 2000  time: 0.0421 (0.0564)  data: 0.0010 (0.0151)  loss: 1.8932 (1.9802)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:30,568 Train INFO: Validation
+[9 7 1 1 4 0 4 5 9 4 9 0 5 3 9 3 6 0 4 7] [9 7 1 6 4 0 4 8 0 4 9 0 5 0 1 3 2 0 4 4]
+2019-10-28 08:21:32,288 Train INFO: Best iteration 2000: accuracy: 0.614
+2019-10-28 08:21:34,610 Train INFO: eta: 0:00:56  iter: 2020  time: 0.0416 (0.0579)  data: 0.0009 (0.0166)  loss: 1.8893 (1.9794)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:35,444 Train INFO: eta: 0:00:55  iter: 2040  time: 0.0410 (0.0577)  data: 0.0009 (0.0164)  loss: 1.8959 (1.9785)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:36,285 Train INFO: eta: 0:00:54  iter: 2060  time: 0.0411 (0.0576)  data: 0.0009 (0.0163)  loss: 1.8813 (1.9777)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:37,150 Train INFO: eta: 0:00:52  iter: 2080  time: 0.0432 (0.0574)  data: 0.0009 (0.0161)  loss: 1.8872 (1.9768)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:37,986 Train INFO: eta: 0:00:51  iter: 2100  time: 0.0418 (0.0573)  data: 0.0010 (0.0160)  loss: 1.8733 (1.9759)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:38,843 Train INFO: eta: 0:00:50  iter: 2120  time: 0.0415 (0.0571)  data: 0.0009 (0.0158)  loss: 1.8845 (1.9750)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:39,696 Train INFO: eta: 0:00:49  iter: 2140  time: 0.0421 (0.0570)  data: 0.0009 (0.0157)  loss: 1.8855 (1.9742)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:40,660 Train INFO: eta: 0:00:47  iter: 2160  time: 0.0452 (0.0569)  data: 0.0009 (0.0156)  loss: 1.8908 (1.9734)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:41,495 Train INFO: eta: 0:00:46  iter: 2180  time: 0.0421 (0.0568)  data: 0.0009 (0.0154)  loss: 1.8833 (1.9726)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:42,329 Train INFO: eta: 0:00:45  iter: 2200  time: 0.0412 (0.0566)  data: 0.0009 (0.0153)  loss: 1.8830 (1.9717)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:42,330 Train INFO: Validation
+[1 1 8 2 8 3 1 4 2 7 8 4 2 0 6 6 4 3 4 1] [1 4 8 0 7 3 1 4 2 7 0 4 2 0 7 6 4 3 4 1]
+2019-10-28 08:21:43,997 Train INFO: accuracy at iteration 002200: 0.602
+2019-10-28 08:21:44,780 Train INFO: eta: 0:00:44  iter: 2220  time: 0.0391 (0.0572)  data: 0.0009 (0.0159)  loss: 1.8685 (1.9708)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:45,655 Train INFO: eta: 0:00:43  iter: 2240  time: 0.0421 (0.0571)  data: 0.0009 (0.0158)  loss: 1.8889 (1.9700)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:46,494 Train INFO: eta: 0:00:42  iter: 2260  time: 0.0415 (0.0570)  data: 0.0010 (0.0157)  loss: 1.8892 (1.9693)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:47,315 Train INFO: eta: 0:00:40  iter: 2280  time: 0.0399 (0.0568)  data: 0.0009 (0.0155)  loss: 1.8786 (1.9685)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:48,169 Train INFO: eta: 0:00:39  iter: 2300  time: 0.0422 (0.0567)  data: 0.0009 (0.0154)  loss: 1.8704 (1.9677)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:49,023 Train INFO: eta: 0:00:38  iter: 2320  time: 0.0431 (0.0566)  data: 0.0009 (0.0153)  loss: 1.8812 (1.9670)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:49,874 Train INFO: eta: 0:00:37  iter: 2340  time: 0.0421 (0.0565)  data: 0.0010 (0.0152)  loss: 1.8774 (1.9663)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:50,727 Train INFO: eta: 0:00:36  iter: 2360  time: 0.0418 (0.0564)  data: 0.0009 (0.0151)  loss: 1.8844 (1.9656)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:51,587 Train INFO: eta: 0:00:34  iter: 2380  time: 0.0421 (0.0562)  data: 0.0009 (0.0149)  loss: 1.8706 (1.9648)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:52,442 Train INFO: eta: 0:00:33  iter: 2400  time: 0.0416 (0.0561)  data: 0.0009 (0.0148)  loss: 1.8800 (1.9642)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:52,442 Train INFO: Validation
+[1 3 0 1 8 4 0 4 0 9 4 1 1 1 4 1 9 3 0 7] [2 3 0 0 0 4 0 4 0 9 4 1 1 9 4 0 9 3 0 0]
+2019-10-28 08:21:54,147 Train INFO: accuracy at iteration 002400: 0.570
+2019-10-28 08:21:54,935 Train INFO: eta: 0:00:32  iter: 2420  time: 0.0391 (0.0567)  data: 0.0009 (0.0154)  loss: 1.8709 (1.9634)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:55,786 Train INFO: eta: 0:00:31  iter: 2440  time: 0.0424 (0.0566)  data: 0.0009 (0.0153)  loss: 1.8688 (1.9627)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:56,623 Train INFO: eta: 0:00:30  iter: 2460  time: 0.0408 (0.0565)  data: 0.0009 (0.0152)  loss: 1.8602 (1.9620)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:57,464 Train INFO: eta: 0:00:29  iter: 2480  time: 0.0418 (0.0563)  data: 0.0010 (0.0151)  loss: 1.8866 (1.9614)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:58,303 Train INFO: eta: 0:00:28  iter: 2500  time: 0.0409 (0.0562)  data: 0.0009 (0.0150)  loss: 1.8546 (1.9606)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:21:59,165 Train INFO: eta: 0:00:26  iter: 2520  time: 0.0426 (0.0561)  data: 0.0009 (0.0149)  loss: 1.8765 (1.9599)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:00,025 Train INFO: eta: 0:00:25  iter: 2540  time: 0.0424 (0.0560)  data: 0.0009 (0.0147)  loss: 1.8794 (1.9594)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:00,887 Train INFO: eta: 0:00:24  iter: 2560  time: 0.0426 (0.0559)  data: 0.0009 (0.0146)  loss: 1.8679 (1.9587)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:01,734 Train INFO: eta: 0:00:23  iter: 2580  time: 0.0418 (0.0558)  data: 0.0011 (0.0145)  loss: 1.8868 (1.9581)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:02,601 Train INFO: eta: 0:00:22  iter: 2600  time: 0.0437 (0.0557)  data: 0.0009 (0.0144)  loss: 1.8681 (1.9575)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:02,602 Train INFO: Validation
+[2 7 5 8 4 4 9 5 0 0 0 4 5 1 0 3 0 4 0 4] [5 8 5 8 4 8 0 2 0 1 0 4 5 8 0 7 0 4 0 4]
+2019-10-28 08:22:04,289 Train INFO: Best iteration 2600: accuracy: 0.641
+2019-10-28 08:22:06,708 Train INFO: eta: 0:00:21  iter: 2620  time: 0.0406 (0.0569)  data: 0.0009 (0.0156)  loss: 1.8607 (1.9568)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:07,550 Train INFO: eta: 0:00:20  iter: 2640  time: 0.0416 (0.0568)  data: 0.0009 (0.0155)  loss: 1.8708 (1.9561)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:08,384 Train INFO: eta: 0:00:19  iter: 2660  time: 0.0412 (0.0566)  data: 0.0009 (0.0154)  loss: 1.8744 (1.9555)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:09,260 Train INFO: eta: 0:00:18  iter: 2680  time: 0.0433 (0.0565)  data: 0.0009 (0.0153)  loss: 1.8643 (1.9548)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:10,098 Train INFO: eta: 0:00:16  iter: 2700  time: 0.0411 (0.0564)  data: 0.0010 (0.0152)  loss: 1.8587 (1.9542)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:10,966 Train INFO: eta: 0:00:15  iter: 2720  time: 0.0428 (0.0563)  data: 0.0010 (0.0151)  loss: 1.8707 (1.9536)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:11,819 Train INFO: eta: 0:00:14  iter: 2740  time: 0.0421 (0.0562)  data: 0.0010 (0.0150)  loss: 1.8745 (1.9530)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:12,652 Train INFO: eta: 0:00:13  iter: 2760  time: 0.0415 (0.0561)  data: 0.0009 (0.0149)  loss: 1.8741 (1.9524)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:13,504 Train INFO: eta: 0:00:12  iter: 2780  time: 0.0418 (0.0560)  data: 0.0012 (0.0148)  loss: 1.8514 (1.9518)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:14,350 Train INFO: eta: 0:00:11  iter: 2800  time: 0.0425 (0.0559)  data: 0.0009 (0.0147)  loss: 1.8687 (1.9512)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:14,351 Train INFO: Validation
+[2 8 9 2 5 2 8 3 2 0 1 7 0 3 4 9 4 3 4 2] [2 9 9 2 4 4 8 4 4 0 6 6 0 3 4 5 0 3 4 2]
+2019-10-28 08:22:16,085 Train INFO: accuracy at iteration 002800: 0.607
+2019-10-28 08:22:16,898 Train INFO: eta: 0:00:10  iter: 2820  time: 0.0407 (0.0564)  data: 0.0009 (0.0152)  loss: 1.8664 (1.9506)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:17,727 Train INFO: eta: 0:00:09  iter: 2840  time: 0.0413 (0.0563)  data: 0.0009 (0.0151)  loss: 1.8501 (1.9500)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:18,559 Train INFO: eta: 0:00:07  iter: 2860  time: 0.0412 (0.0562)  data: 0.0009 (0.0150)  loss: 1.8699 (1.9495)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:19,398 Train INFO: eta: 0:00:06  iter: 2880  time: 0.0413 (0.0561)  data: 0.0009 (0.0149)  loss: 1.8614 (1.9489)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:20,249 Train INFO: eta: 0:00:05  iter: 2900  time: 0.0411 (0.0560)  data: 0.0009 (0.0148)  loss: 1.8590 (1.9483)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:21,121 Train INFO: eta: 0:00:04  iter: 2920  time: 0.0414 (0.0560)  data: 0.0009 (0.0147)  loss: 1.8442 (1.9476)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:21,972 Train INFO: eta: 0:00:03  iter: 2940  time: 0.0411 (0.0559)  data: 0.0009 (0.0146)  loss: 1.8550 (1.9469)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:22,864 Train INFO: eta: 0:00:02  iter: 2960  time: 0.0439 (0.0558)  data: 0.0010 (0.0145)  loss: 1.8736 (1.9463)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:23,616 Train INFO: eta: 0:00:01  iter: 2980  time: 0.0366 (0.0557)  data: 0.0008 (0.0144)  loss: 1.8524 (1.9457)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:24,349 Train INFO: eta: 0:00:00  iter: 3000  time: 0.0366 (0.0555)  data: 0.0008 (0.0143)  loss: 1.8611 (1.9451)  lr: 0.000030  max mem: 0.4 GB
+2019-10-28 08:22:24,451 Train INFO: Total training time: 0:02:46.737445 (0.0556 s / it)
+2019-10-28 08:22:24,451 Train INFO: Best iteration: 002600 | best recall 0.6412776412776413 

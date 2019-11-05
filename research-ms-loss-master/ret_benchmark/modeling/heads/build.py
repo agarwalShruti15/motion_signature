@@ -8,6 +8,7 @@
 from ret_benchmark.modeling.registry import HEADS
 
 from .linear_norm import LinearNorm
+from .linear_only import LinearOnly
 
 
 def build_head(cfg):

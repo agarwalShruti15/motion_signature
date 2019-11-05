@@ -45,6 +45,8 @@ _C.LOSSES.MULTI_SIMILARITY_LOSS = CN()
 _C.LOSSES.MULTI_SIMILARITY_LOSS.SCALE_POS = 2.0
 _C.LOSSES.MULTI_SIMILARITY_LOSS.SCALE_NEG = 40.0
 _C.LOSSES.MULTI_SIMILARITY_LOSS.HARD_MINING = True
+_C.LOSSES.MULTI_SIMILARITY_LOSS.MARGIN = 0.1
+_C.LOSSES.MULTI_SIMILARITY_LOSS.THRESH = 0.5
 
 # Data option
 _C.DATA = CN()
@@ -59,13 +61,13 @@ _C.DATA.NUM_INSTANCES = 5
 _C.INPUT = CN()
 
 # INPUT CONFIG
-_C.INPUT.MEAN = [104. / 255, 117. / 255, 128. / 255]
-_C.INPUT.STD = 3 * [1. / 255]
 _C.INPUT.TRANSFORM = 'standard_scalar'
 _C.INPUT.MEAN = '/data/home/shruti/voxceleb/fabnet/leaders/leaders_150_mean.npy'
 _C.INPUT.STD = '/data/home/shruti/voxceleb/fabnet/leaders/leaders_150_std.npy'
 _C.INPUT.DATA_LOADER = 'FabNet'
 _C.INPUT.SAMPLER = 'random_identity_sampler'
+_C.INPUT.DIM1 = 100
+_C.INPUT.DIM2 = 256
 _C.INPUT.EVAL = 'recall_at_k'
 _C.INPUT.FRAME_LENGTH = 150 # the number of frames to consider (30 fps frame rate for leaders and 25 for voxceleb)
 
@@ -85,7 +87,7 @@ _C.SOLVER.GAMMA = 0.1
 _C.SOLVER.WARMUP_FACTOR = 0.01
 _C.SOLVER.WARMUP_ITERS = 200
 _C.SOLVER.WARMUP_METHOD = 'linear'
-_C.SOLVER.CHECKPOINT_PERIOD = 1000
+_C.SOLVER.CHECKPOINT_PERIOD = 10000
 _C.SOLVER.RNG_SEED = 1
 
 # Logger

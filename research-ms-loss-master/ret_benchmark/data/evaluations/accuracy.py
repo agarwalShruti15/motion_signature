@@ -18,7 +18,7 @@ class Accuracy(object):
         
         softmax_feat = np.exp(feats)/np.sum(np.exp(feats), axis=1, keepdims=True)
         
-        r_idx = np.random.choice(range(len(feats)), 20, replace=False)
-        print(np.argmax(softmax_feat, axis=1)[r_idx], labels[r_idx])
+        #r_idx = np.random.choice(range(len(feats)), 20, replace=False)
+        #print(np.argmax(softmax_feat, axis=1)[r_idx], labels[r_idx])
         
         return np.sum(np.argmax(softmax_feat, axis=1) == labels)/len(feats)

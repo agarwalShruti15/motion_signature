@@ -7,6 +7,7 @@
 from ret_benchmark.data.registry import EVAL
 from .ret_metric import RetMetric
 from .accuracy import Accuracy
+from .l1_evalutaion import L1_Loss
 
 def build_evaluation(cfg):
     

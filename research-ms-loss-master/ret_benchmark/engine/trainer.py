@@ -17,8 +17,6 @@ from ret_benchmark.utils.freeze_bn import set_bn_eval
 from ret_benchmark.utils.metric_logger import MetricLogger
 from ret_benchmark.data.evaluations.build import build_evaluation
 
-from torch.nn.functional import nll_loss, log_softmax
-
 
 def do_train(
         cfg,
@@ -40,7 +38,7 @@ def do_train(
 
     start_iter = arguments["iteration"]
     best_iteration = -1
-    best_recall = 0
+    best_recall = -np.Inf
 
     start_training_time = time.time()
     end = time.time()
