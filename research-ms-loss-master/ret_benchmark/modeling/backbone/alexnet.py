@@ -6,7 +6,7 @@ from ret_benchmark.modeling import registry
 @registry.BACKBONES.register('alexnet')
 class AlexNet(nn.Module):
 
-    def __init__(self):
+    def __init__(self, cfg):
         super(AlexNet, self).__init__()
         self.features = nn.Sequential(
             nn.Conv2d(1, 64, kernel_size=11, stride=4, padding=5),

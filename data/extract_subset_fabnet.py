@@ -33,7 +33,6 @@ if __name__ == '__main__':
         parser.add_argument('--fnmodel', type=str, help='path to fab-net model', default='release')    
         parser.add_argument('--ofd', type=str, help='base path to output the feature files')
         parser.add_argument('--path_file', type=str, help='the file names to execute on this machine, all is None', default=None)
-        parser.add_argument('--gpu', type=boolean_string, help='use gpu or not', default=True)
 
         args = parser.parse_args()
         bs_fldr = args.bsfldr
@@ -42,14 +41,13 @@ if __name__ == '__main__':
         fabnet_path = args.fnmodel
         ofd = args.ofd
         paths_file = args.path_file
-        gpu = args.gpu
         
         # create the base output directory
         os.makedirs(ofd, exist_ok=True)
         
         # load the model for frame embeddings
         emb_model = FrontaliseModelMasks_wider(3, inner_nc=u.emb_n, num_additional_ids=num_additional_ids)
-        if gpu:
+        if torch.cuda.is_available():
                 emb_model.load_state_dict(torch.load(fabnet_path)['state_dict'])
         else:
                 emb_model.load_state_dict(torch.load(fabnet_path, map_location='cpu')['state_dict'])
@@ -65,7 +63,12 @@ if __name__ == '__main__':
                 
                 # if there are mp4 files then extract embeddings from this folder
                 fl_n = os.path.splitext(vid_file)[0] # the base file name
-                out_file = os.path.join(ofd, '_'.join(dirname.split('/')) + '_' + fl_n + '.npy')
+                
+                # outfile
+                os.makedirs(os.path.join(ofd, dirname), exist_ok=True)
+                out_file = os.path.join(ofd, dirname, fl_n + '.npy')                
+                #out_file = os.path.join(ofd, '_'.join(dirname.split('/')) + '_' + fl_n + '.npy')
+                
                 if not os.path.exists(out_file):
                         full_struct.append((os.path.join(bs_fldr, dirname), fl_n, out_file, emb_model, openface_path))
                         

@@ -508,8 +508,11 @@ class BNInception(nn.Module):
         return x
 
     def forward(self, input):
+        print(input)
         x = self.features(input)
         x = self.logits(x)
+        print(x)
+        print(x.shape)
         return x
 
     def load_param(self, model_path):

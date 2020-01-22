@@ -40,8 +40,8 @@ MODEL:
     IN_CHANNEL: 1024 #1024 # alexnet # 1024 # vggnet
     LR_MUL: 1.0
     
-  PRETRAIN: none
-  PRETRIANED_PATH: /data/home/shruti/voxceleb/
+  PRETRAIN: resume
+  PRETRIANED_PATH: /data/home/shruti/voxceleb/mdls_ldrs_clss_resnet50/best_model.pth
 
 SOLVER:
   MAX_ITERS: 50000

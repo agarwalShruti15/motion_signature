@@ -6,7 +6,8 @@ from joblib import Parallel, delayed
 import time
 import numpy as np
 
-from vggface_model import VGG_16
+from vggface_model import vgg_face_dag
+import torch
 
 """
 Usage: python -W ignore extract_subset_fabnet.py --bsfldr '/data/home/shruti/voxceleb/videos/vox2_mp4/dev/mp4' --ofd '/data/home/shruti/voxceleb/vgg/vox2_mp4' --njobs 60 --openface 'OpenFace-master/build/bin' --fnmodel 'VGG_FACE.t7' --path_file 'utils/data_subset_0.txt'
@@ -32,7 +33,6 @@ if __name__ == '__main__':
     parser.add_argument('--openface', type=str, help='path to openface build/bin folder', default='OpenFace-master/build/bin')    
     parser.add_argument('--fnmodel', type=str, help='path to vgg pretrained model', default='release')    
     parser.add_argument('--ofd', type=str, help='base path to output the feature files')
-    parser.add_argument('--path_file', type=str, help='the file names to execute on this machine, all is None', default=None)
     parser.add_argument('--gpu', type=boolean_string, help='use gpu or not', default=True)
 
     args = parser.parse_args()
@@ -41,32 +41,38 @@ if __name__ == '__main__':
     openface_path = args.openface
     vgg_path = args.fnmodel
     ofd = args.ofd
-    paths_file = args.path_file
     gpu = args.gpu
 
     # create the base output directory
     os.makedirs(ofd, exist_ok=True)
     
     # load the model for frame embeddings
-    vgg_model = VGG_16().float()
-    vgg_model.load_weights(vgg_path)
-    if gpu:
+    vgg_model = vgg_face_dag(vgg_path)
+    if torch.cuda.is_available():
+        torch.device('cuda:0')
         vgg_model.cuda() #assumes that you're using GPU
-    vgg_model.eval()
+    vgg_model.eval()    
 
     # collect all the video files to process
     full_struct = []
-    with open(paths_file, 'r')  as f:
-        paths = f.readlines()
-
-    for p in paths:
-        [dirname, vid_file] = os.path.split(p)
+    for dirname, dirnames, filenames in os.walk(bs_fldr):
 
         # if there are mp4 files then extract embeddings from this folder
-        fl_n = os.path.splitext(vid_file)[0] # the base file name
-        out_file = os.path.join(ofd, '_'.join(dirname.split('/')) + '_' + fl_n + '.npy')
-        if not os.path.exists(out_file):
-            full_struct.append((os.path.join(bs_fldr, dirname), fl_n, out_file, vgg_model, openface_path, gpu))
+        vid_files = [v for v in os.listdir(dirname) if v.endswith('.mp4')]  # get all the videos
+        for vi in range(len(vid_files)):
+            fl_n = os.path.splitext(vid_files[vi])[0] # the base file name
+
+            # outfile
+            if bs_fldr[-1] == '/':
+                out_fldr = os.path.join(ofd, dirname[len(bs_fldr):]) # backslash
+            else:
+                out_fldr = os.path.join(ofd, dirname[len(bs_fldr)+1:]) # no backlash in basefolder name
+
+            os.makedirs(out_fldr, exist_ok=True)
+            out_file = os.path.join(out_fldr, fl_n + '.npy')
+
+            if not os.path.exists(out_file):
+                full_struct.append((dirname, fl_n, out_file, vgg_model, openface_path, gpu))
 
     # run the jobs in parallel
     start_time = time.time()

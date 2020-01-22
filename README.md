@@ -11,11 +11,49 @@ Motion signature based soft-biometric for people.
 
 4) cd data/
 
-5) python -W ignore extract_fabnet.py --bsfldr <basefolder with mp4> --njobs 10 --openface <path to openface build/bin> --fnmodel <path to fabnet model file>
-    
-  Example usage is given in run_face_emb.sh
-  
-  python -W ignore extract_fabnet.py --bsfldr 'vox2_test_mp4' --njobs 10 --openface 'OpenFace-master/build/bin' --fnmodel 'release/nv2_curriculum.pth'
+5) download the VGG, Fabnet and Fabnet Metric Learning models for feature extraction. 
+The models can be found at: https://www.dropbox.com/sh/lfon3rvjvt6uatk/AAAALG6B07faPSPjY3GZRHXXa?dl=0
+
+
+## Feature Generation
+
+### VGG feature:
+
+Feature Extraction File: data/extract_vgg.py
+Usage: cd data/
+python -W ignore extract_vgg.py \ 
+--bsfldr <basefolder with mp4 files> \ 
+--njobs 4 \
+--openface <Openface Binary Folder> \
+--fnmodel <Path to VGG Model : download from .> \
+--ofd  <output base folder>
+
+### FabNet features:
+
+Feature Extraction File: data/extract_fabnet.py
+Usage: cd data/
+python -W ignore extract_fabnet.py \ 
+--bsfldr <basefolder with mp4> \ 
+--njobs 4 \
+--openface <Openface Binary Folder> \
+--fnmodel <Path to Fabnet Model : download from .> \
+--ofd  <output base folder>
+
+### FabNet features after metric learning:
+
+Feature Extraction File: research-ms-loss-master/generate_all.py
+Usage: 
+1) cd research-ms-loss-master/
+2) Update the pretrained model path in config file : 
+MODEL:PRETRIANED_PATH
+
+3) python -W ignore generate_all.py \ 
+--bsfldr <basefolder with mp4> \ 
+--njobs 4 \
+--ofd  <output base folder>
+--cfg configs/ms_resnet101_fabnet_vox.yaml
+--ow 5
+
   
 ## training
 

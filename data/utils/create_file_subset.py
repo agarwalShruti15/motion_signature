@@ -10,8 +10,8 @@ if __name__ == '__main__':
 
     #read all the txt file
     #bs_fldr = '/data/home/shruti/voxceleb/videos/vox2_test_mp4/mp4'
-    bs_fldr = '/data/home/shruti/voxceleb/videos/leaders'
-    paths_file = 'data_leaders_with_fakes'
+    bs_fldr = '/data/home/shruti/voxceleb/videos/leaders/'
+    paths_file = 'tmp'
     part_num = 1
 
     # collect all the video files to process

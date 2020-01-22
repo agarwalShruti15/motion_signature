@@ -7,7 +7,8 @@ from .asym_resnet50 import AsymResNet50
 from .asym_alexnet import AsymAlexNet
 from .resnet18 import ResNet18
 from .only_fc import Only_FC
-from .only_fc_nodropout import Only_FC_noDP
+from .resnet101 import ResNet101
+from .resnet152 import ResNet152
 
 def build_backbone(cfg):
     assert cfg.MODEL.BACKBONE.NAME in BACKBONES, f"backbone {cfg.MODEL.BACKBONE} is not defined"

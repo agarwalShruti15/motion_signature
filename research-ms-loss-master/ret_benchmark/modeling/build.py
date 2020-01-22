@@ -35,6 +35,12 @@ def build_model(cfg):
         model.backbone.load_classification_param(pretrained_path)
     elif cfg.MODEL.PRETRAIN == 'resume':
         print('Resuming from model ...')
-        ckp = torch.load(os.path.expanduser(cfg.MODEL.PRETRIANED_PATH))
-        model.load_state_dict(ckp['model'])
+        
+        if cfg.MODEL.DEVICE == "cuda":
+            ckp = torch.load(os.path.expanduser(cfg.MODEL.PRETRIANED_PATH))
+            model.load_state_dict(ckp['model'])
+        else:
+            ckp = torch.load(os.path.expanduser(cfg.MODEL.PRETRIANED_PATH), map_location='cpu')
+            model.load_state_dict(ckp['model'])
+            
     return model

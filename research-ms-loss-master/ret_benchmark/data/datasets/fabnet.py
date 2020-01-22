@@ -34,6 +34,8 @@ class FabNetDataLoader(Dataset):
     """
 
     def __init__(self, cfg, is_train, transforms):
+        
+        self.is_train = is_train
         if is_train:
             self.img_source = cfg.DATA.TRAIN_IMG_SOURCE
         else:
@@ -65,11 +67,11 @@ class FabNetDataLoader(Dataset):
                 _path, _label = re.split(r",| ", line.strip())
                 self.path_list.append(_path)
                 self.label_list.append(int(_label))
-                
-        uniq_lbls, unq_cnt = np.unique(self.label_list, return_counts=True)
-        uniq_lbls = uniq_lbls[unq_cnt>=self.min_instances].copy()
-        self.path_list = [self.path_list[i] for i in range(len(self.path_list)) if self.label_list[i] in uniq_lbls]
-        self.label_list = [self.label_list[i] for i in range(len(self.label_list)) if self.label_list[i] in uniq_lbls]
+        if self.is_train:            
+            uniq_lbls, unq_cnt = np.unique(self.label_list, return_counts=True)
+            uniq_lbls = uniq_lbls[unq_cnt>=self.min_instances].copy()
+            self.path_list = [self.path_list[i] for i in range(len(self.path_list)) if self.label_list[i] in uniq_lbls]
+            self.label_list = [self.label_list[i] for i in range(len(self.label_list)) if self.label_list[i] in uniq_lbls]
 
     def _build_label_index_dict(self):
         
@@ -85,7 +87,12 @@ class FabNetDataLoader(Dataset):
         
         path = self.path_list[index]
         img_path = os.path.join(self.root, path)
-        img = np.load(img_path)        
+        
+        if os.path.exists(img_path):
+            img = np.load(img_path)
+        else:
+            p, f = os.path.split(img_path)
+            img = np.load(os.path.join(p, '_' + f))
         
         # if there is audio feature, pick only FabNet
         if len(img.shape)>2:
@@ -94,10 +101,7 @@ class FabNetDataLoader(Dataset):
         # pick a random frame sequence of T length
         r_idx = np.random.choice(np.arange(len(img)-self.T+1), 1)[0]
         img = img[r_idx:r_idx+self.T, :].copy()
-        
-        #img = img[:self.T, :].copy()
-                
+                        
         if self.transforms is not None:
             img = self.transforms(img)
-        
         return img.float(), np.int64(label)

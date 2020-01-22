@@ -14,9 +14,10 @@ class Accuracy(object):
     def eval(self, **kargs):
         
         feats = kargs['feats']
-        labels = kargs['labels']
+        labels = kargs['labels'].ravel()
         
         softmax_feat = np.exp(feats)/np.sum(np.exp(feats), axis=1, keepdims=True)
+        print(feats.shape, np.sum(np.argmax(softmax_feat, axis=1) == labels), labels.shape)
         
         #r_idx = np.random.choice(range(len(feats)), 20, replace=False)
         #print(np.argmax(softmax_feat, axis=1)[r_idx], labels[r_idx])

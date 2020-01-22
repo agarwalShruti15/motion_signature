@@ -29,12 +29,11 @@ def load_dict_file(bs_fldr, prefex):
                 label_dict[_label].extend([_path])
     
     return label_dict
-    
 
 def get_leader_file(bsfldr, T):
     
-    subfldrs = np.array(['bo', 'br', 'bs', 'cb', 'dt_week', 'dt_rndm', 'ew', 'hc', 'jb', 'kh', 'pb'])
-    labels = np.array([0, 1, 2, 3, 4, 4, 5, 6, 7, 8, 9])
+    subfldrs = np.array(['bo', 'br', 'bs', 'cb', 'dt', 'ew', 'hc', 'jb', 'kh', 'pb'])
+    labels = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
     
     #     
     label_file_dict = {}
@@ -56,10 +55,10 @@ def get_leader_file(bsfldr, T):
 
 def get_leader_file_with_synfake(bsfldr, T):
       
-    subfldrs = np.array(['bo', 'br', 'bs', 'cb', 'dt_week', 'dt_rndm', 'ew', 'hc', 'jb', 'kh', 'pb', 
+    subfldrs = np.array(['bo', 'br', 'bs', 'cb', 'dt', 'ew', 'hc', 'jb', 'kh', 'pb', 
                          'bo_syn_fake', 'dt_rndm_syn_fake', 'hc_syn_fake', 'bs_syn_fake', 'ew_syn_fake', 
                          'br_syn_fake', 'cb_syn_fake', 'jb_syn_fake', 'kh_syn_fake', 'pb_syn_fake'])
-    labels = np.array([0, 1, 2, 3, 4, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19])    
+    labels = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19])    
     
     #     
     label_file_dict = {}
@@ -85,9 +84,9 @@ def get_vgg_leader_file_faceswap(bsfldr, T):
     # TODO: This is a HACK1 because the labels have same prefix
     base_vid_fldr = '/data/home/shruti/voxceleb/videos/leaders/'
     
-    subfldrs = np.array(['bo', 'br', 'bs', 'cb', 'dt_week', 'dt_rndm', 'ew', 'hc', 'jb', 'kh', 'pb', 
+    subfldrs = np.array(['bo', 'br', 'bs', 'cb', 'dt', 'ew', 'hc', 'jb', 'kh', 'pb', 
                          'bo_faceswap', 'dt_faceswap', 'hc_faceswap', 'bs_faceswap', 'ew_faceswap'])
-    fldr2lbl = {'bo': 0, 'br': 1, 'bs': 2, 'cb': 3, 'dt_week': 4, 'dt_rndm': 4, 'ew': 5, 'hc': 6, 'jb': 7, 'kh': 8, 'pb': 9, 
+    fldr2lbl = {'bo': 0, 'br': 1, 'bs': 2, 'cb': 3, 'dt': 4, 'ew': 5, 'hc': 6, 'jb': 7, 'kh': 8, 'pb': 9, 
                          'bo_faceswap':10, 'dt_faceswap':11, 'hc_faceswap':12, 'bs_faceswap':13, 'ew_faceswap':14}
     
     all_files = []
@@ -162,8 +161,8 @@ def get_vgg_leader_file(bsfldr, T):
     # TODO: This is a HACK1 because the labels have same prefix
     base_vid_fldr = '/data/home/shruti/voxceleb/videos/leaders/'
     
-    subfldrs = np.array(['bo', 'br', 'bs', 'cb', 'dt_week', 'dt_rndm', 'ew', 'hc', 'jb', 'kh', 'pb'])
-    fldr2lbl = {'bo': 0, 'br': 1, 'bs': 2, 'cb': 3, 'dt_week': 4, 'dt_rndm': 4, 'ew': 5, 'hc': 6, 'jb': 7, 'kh': 8, 'pb': 9}
+    subfldrs = np.array(['bo', 'br', 'bs', 'cb', 'dt', 'ew', 'hc', 'jb', 'kh', 'pb'])
+    fldr2lbl = {'bo': 0, 'br': 1, 'bs': 2, 'cb': 3, 'dt': 4, 'ew': 5, 'hc': 6, 'jb': 7, 'kh': 8, 'pb': 9}
     
     all_files = []
     for s in subfldrs:
@@ -280,11 +279,14 @@ def bootstrap_mean_std(bsfldr, label_file_dict, s_n, s_sz):
             plt.draw()
             plt.savefig(f'{f_id}.png')
     
-    return np.mean(out_mean, axis=0), np.mean(out_std, axis=0)
+    return np.mean(out_mean, axis=0), np.std(out_std, axis=0)
 
 str2func = {'leaders': get_leader_file, 'test': get_test_file, 'voxceleb': get_voxceleb_file, 
             'vgg_leader': get_vgg_leader_file, 'leader_with_faceswap': get_vgg_leader_file_faceswap,
             'leader_with_synfake': get_leader_file_with_synfake}
+
+exclude_files = ['25GOnaY8ZCY', '2AFpAATHXtc', '3vPdtajOJfw', 
+                 'E3gfMumXCjI', 'EAZIHIiuhrc', 'k4OZOTaf3lk']
 
 if __name__ == '__main__':
     
@@ -297,6 +299,8 @@ if __name__ == '__main__':
     parser.add_argument('--tp', type=float, help='the ratio of test files', default=0.1)
     parser.add_argument('--vp', type=float, help='the ratio of val files', default=0.1)
     parser.add_argument('--comp_mean', type=str, help='whether to recompute mean (Y/N)', default='N')
+    parser.add_argument('--sn', type=np.int32, help='number of bootstrapping samples', default=50)
+    parser.add_argument('--s_sz', type=np.int32, help='number of files per label class', default=10)    
     
     args = parser.parse_args()
     test_perc = args.tp # the number of files to include in testing
@@ -306,16 +310,18 @@ if __name__ == '__main__':
     func = args.func
     T = args.T
     comp_mean = args.comp_mean
+    s_n = args.sn
+    s_sz = args.s_sz
     
     # collect all the files first
-    # label_file_dict = str2func[func](bsfldr, T)
-    label_file_dict = load_dict_file(bsfldr, outfile + f'_{T}_')
+    label_file_dict = str2func[func](bsfldr, T)
+
     print(len(list(label_file_dict.keys())))
     
     if comp_mean == 'Y':
         print('computing mean/std')
         # compute the mean and std of the files via bootrapping 
-        [mean, std] = bootstrap_mean_std(bsfldr, label_file_dict, s_n = 50, s_sz = 10)
+        [mean, std] = bootstrap_mean_std(bsfldr, label_file_dict, s_n = s_n, s_sz = s_sz)
         # mean and standard deviation file save
         np.save(os.path.join(bsfldr, outfile + f'_{T}_mean.npy'), mean)
         np.save(os.path.join(bsfldr, outfile + f'_{T}_std.npy'), std)

@@ -185,7 +185,12 @@ if __name__ == '__main__':
 
         # if there are mp4 files then extract embeddings from this folder
         fl_n = os.path.splitext(vid_file)[0] # the base file name
-        out_file = os.path.join(ofd, '_'.join(dirname.split('/')) + '_' + fl_n + '.npy')
+        
+        # outfile
+        os.makedirs(os.path.join(ofd, dirname), exist_ok=True)
+        out_file = os.path.join(ofd, dirname, fl_n + '.npy')        
+        #out_file = os.path.join(ofd, '_'.join(dirname.split('/')) + '_' + fl_n + '.npy')
+        
         if not os.path.exists(out_file):
             full_struct.append((os.path.join(bs_fldr, dirname), fl_n, out_file))
 
