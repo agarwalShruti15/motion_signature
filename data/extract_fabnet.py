@@ -34,14 +34,17 @@ if __name__ == '__main__':
 	openface_path = args.openface
 	fabnet_path = args.fnmodel
 	ofd = args.ofd
-	
+	gpu = False
 	# create the base output directory
 	os.makedirs(ofd, exist_ok=True)
 	
 	# load the model for frame embeddings
 	emb_model = FrontaliseModelMasks_wider(3, inner_nc=u.emb_n, num_additional_ids=num_additional_ids)
-	emb_model.load_state_dict(torch.load(fabnet_path)['state_dict'])
-	emb_model.eval()	
+	if gpu:
+		emb_model.load_state_dict(torch.load(fabnet_path)['state_dict'])
+	else:
+		emb_model.load_state_dict(torch.load(fabnet_path, map_location='cpu')['state_dict'])
+	emb_model.eval()
 	
 	# collect all the video files to process
 	full_struct = []
@@ -51,7 +54,16 @@ if __name__ == '__main__':
 		vid_files = [v for v in os.listdir(dirname) if v.endswith('.mp4')]  # get all the videos
 		for vi in range(len(vid_files)):
 			fl_n = os.path.splitext(vid_files[vi])[0] # the base file name
-			out_file = os.path.join(ofd, '_'.join(dirname[len(bs_fldr)+1:].split('/')) + '_' + fl_n + '.npy')
+			
+			# outfile
+			if bs_fldr[-1] == '/':
+				out_fldr = os.path.join(ofd, dirname[len(bs_fldr):]) # backslash
+			else:
+				out_fldr = os.path.join(ofd, dirname[len(bs_fldr)+1:]) # no backlash in basefolder name
+				
+			os.makedirs(out_fldr, exist_ok=True)
+			out_file = os.path.join(out_fldr, fl_n + '.npy')
+			
 			if not os.path.exists(out_file):
 				full_struct.append((dirname, fl_n, out_file, emb_model, openface_path))
 			
