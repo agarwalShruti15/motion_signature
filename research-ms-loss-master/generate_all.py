@@ -133,6 +133,7 @@ if __name__ == '__main__':
             out_file = os.path.join(out_fldr, fl_n + '.npy')
             
             if not os.path.exists(out_file):
+                print(out_file)
                 full_struct.append((dirname, fl_n, out_file, metric_model, data_params ))
                                        
     # run the jobs in parallel

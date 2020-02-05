@@ -4,7 +4,7 @@ data/release/
 data/vox2_test_mp4/
 data/vox2_mp4/
 data/OpenFace-master/
-data/resnet3D/c
+data/resnet3D/*
 *.wpr
 *.wpu
 **__pycache__/
