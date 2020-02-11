@@ -100,7 +100,7 @@ class Bottleneck(nn.Module):
 @registry.BACKBONES.register('resnet18')
 class ResNet18(nn.Module):
 
-    def __init__(self):
+    def __init__(self, cfg):
         super(ResNet18, self).__init__()
         
         # parameters

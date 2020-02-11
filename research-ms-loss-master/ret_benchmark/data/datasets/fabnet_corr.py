@@ -15,14 +15,16 @@ import numpy as np
 from itertools import combinations
 import torch
 
-@DATA_LOADER.register('aus190_lbl')
-class AUS190_LBLDataLoader(Dataset):
+@DATA_LOADER.register('FabNet_Corr')
+class FabNetCorrDataLoader(Dataset):
     """
     Basic Dataset read image path from img_source
     img_source: list of img_path and label
     """
 
     def __init__(self, cfg, is_train, transforms):
+        
+        self.is_train = is_train
         if is_train:
             self.img_source = cfg.DATA.TRAIN_IMG_SOURCE
         else:
@@ -38,7 +40,7 @@ class AUS190_LBLDataLoader(Dataset):
         self.path_list = list()
         self._load_data()
         self.label_index_dict = self._build_label_index_dict()
-        self.feat_pair = list(combinations(range(20), 2))
+        self.feat_pair = list(combinations(range(256), 2))
         self.feat_pair = np.array([[j[0], j[1]] for j in self.feat_pair])
 
     def __len__(self):
@@ -56,18 +58,17 @@ class AUS190_LBLDataLoader(Dataset):
                 _path, _label = re.split(r",| ", line.strip())
                 self.path_list.append(_path)
                 self.label_list.append(int(_label))
-                
-        uniq_lbls, unq_cnt = np.unique(self.label_list, return_counts=True)
-        uniq_lbls = uniq_lbls[unq_cnt>=self.min_instances].copy()
-        self.path_list = [self.path_list[i] for i in range(len(self.path_list)) if self.label_list[i] in uniq_lbls]
-        self.label_list = [self.label_list[i] for i in range(len(self.label_list)) if self.label_list[i] in uniq_lbls]
+        if self.is_train:            
+            uniq_lbls, unq_cnt = np.unique(self.label_list, return_counts=True)
+            uniq_lbls = uniq_lbls[unq_cnt>=self.min_instances].copy()
+            self.path_list = [self.path_list[i] for i in range(len(self.path_list)) if self.label_list[i] in uniq_lbls]
+            self.label_list = [self.label_list[i] for i in range(len(self.label_list)) if self.label_list[i] in uniq_lbls]
 
     def _build_label_index_dict(self):
         
         index_dict = defaultdict(list)
         for i, label in enumerate(self.label_list):
             index_dict[label].append(i)
-        print(len(index_dict.keys()))
         return index_dict
 
     def __getitem__(self, index):
@@ -77,38 +78,43 @@ class AUS190_LBLDataLoader(Dataset):
         
         path = self.path_list[index]
         img_path = os.path.join(self.root, path)
-        img = np.load(img_path)
         
+        if os.path.exists(img_path):
+            img = np.load(img_path)
+        else:
+            p, f = os.path.split(img_path)
+            img = np.load(os.path.join(p, '_' + f))
+                    
         # if there is audio feature, pick only FabNet
         if len(img.shape)>2:
             img = img[:, :, 0].copy()
-            
-        # get the first 20 features to the y label and rest to aus embeddings
-        y_lbl = img[:, :20].copy()
-        aus = img[:, :20].copy()
         
-        # pick a sequence where the correlation is not nan
         out_X = []
         i = 0
         while len(out_X)<1:
             # pick a random frame sequence of T length
-            r_idx = np.random.choice(np.arange(len(aus)-self.T+1), 1)[0]
-            X = aus[r_idx:r_idx+self.T, :].copy()
+            r_idx = np.random.choice(np.arange(len(img)-self.T+1), 1)[0]
+            X = img[r_idx:r_idx+self.T, :].copy()
+            
+            X = X / np.linalg.norm(X, axis=1, keepdims=True)
             X = X - np.mean(X, axis=0, keepdims=True)
             X = X / np.linalg.norm(X, axis=0, keepdims=True) # normalize
+            corr = np.sum(X[:, self.feat_pair[:, 0]] * X[:, self.feat_pair[:, 1]], axis=0)
         
-            X1 = X[:, self.feat_pair[:, 0]].copy()
-            X2 = X[:, self.feat_pair[:, 1]].copy()
-        
-            corr = np.sum(X1 * X2, axis=0)
-        
-            if np.sum(np.isnan(corr))>0 and i < len(aus):
+            if np.sum((np.isnan(corr)) | (np.isinf(corr)))>0 and i < len(img):
                 i = i+1
                 continue
             else:
-                out_X = np.reshape(corr, (1, -1)).copy()
-                out_X[np.isnan(out_X)] = 0
-                img = []; X = []; X1 = []; X2 = []
-    
-        tensor = torch.from_numpy(out_X)    
-        return tensor.float(), np.reshape(label, (1, -1)).astype(np.int64)
+                if np.sum((np.isnan(corr)) | (np.isinf(corr)))>0:
+                    #assert False, f'{img_path} {np.sum((np.isnan(corr)) | (np.isinf(corr)))}'
+                    corr[(np.isnan(corr)) | (np.isinf(corr))] = 0
+                
+                out_X = np.reshape(corr, (128, 255)).copy()
+        
+        assert np.sum(np.isnan(out_X))<1, 'Nan values in correlation computation, please handle it'
+        if self.transforms is not None:
+            out_X = self.transforms(out_X)
+            
+        X = []; corr = []; img = [];
+            
+        return out_X.float(), np.int64(label)

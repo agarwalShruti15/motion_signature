@@ -9,6 +9,8 @@ from .fabnet import FabNetDataLoader
 from .aus190_lbl import AUS190_LBLDataLoader
 from .aus_190aus import AUS2_190ausDataLoader
 from .fabnet_190aus import FabNet2_190ausDataLoader
+from .fabnet_190aus import FabNet2_190ausDataLoader
+from .fabnet_corr import FabNetCorrDataLoader
 
 def build_data_loader(cfg, is_train, transforms):
     

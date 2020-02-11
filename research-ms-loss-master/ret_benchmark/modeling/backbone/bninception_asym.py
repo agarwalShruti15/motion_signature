@@ -6,11 +6,11 @@ import torch.nn.functional as F
 
 from ret_benchmark.modeling import registry
 
-@registry.BACKBONES.register('bninception')
-class BNInception(nn.Module):
+@registry.BACKBONES.register('bninception_asym')
+class BNInception_asym(nn.Module):
 
     def __init__(self, cfg):
-        super(BNInception, self).__init__()
+        super(BNInception_asym, self).__init__()
         inplace = True
         self.conv1_7x7_s2 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3))
         self.conv1_7x7_s2_bn = nn.BatchNorm2d(64, affine=True)
