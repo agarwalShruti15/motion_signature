@@ -61,3 +61,7 @@ SOLVER:
 VALIDATION:
   IS_VALIDATION: True
   VERBOSE: 400
+2020-02-11 23:23:18,029 Train INFO: | Dataset Info |datasize: 965494|num_labels: 5994|
+2020-02-11 23:23:18,050 Train INFO: | Dataset Info |datasize: 110327|num_labels: 5994|
+2020-02-11 23:23:18,059 Train INFO: Start training
+2020-02-11 23:23:21,063 Train INFO: Validation
