@@ -13,7 +13,7 @@ DATA:
   TEST_IMG_SOURCE: /data/home/shruti/voxceleb/fabnet/vox2_mp4/voxceleb_100_test.txt
   TRAIN_BATCHSIZE: 160
   TEST_BATCHSIZE: 256
-  NUM_WORKERS: 20 #number of data loader workers
+  NUM_WORKERS: 16 #number of data loader workers
   NUM_INSTANCES: 8 # number of instances per label in one batch
 
 # Input option
@@ -27,7 +27,7 @@ INPUT:
   FRAME_LENGTH: 100 # the number of frames to consider (30 fps frame rate for leaders and 25 for voxceleb) 
 
 # Checkpoint save dir
-SAVE_DIR: /data/home/shruti/voxceleb/mdls_vox_ms_resnet101_000009
+SAVE_DIR: /data/home/shruti/voxceleb/temp
 
 # Model parameters
 MODEL: 

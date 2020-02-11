@@ -1,0 +1,63 @@
+2020-02-11 23:22:59,142 Train INFO: CODE_PATH: /data/home/shruti/voxceleb/motion_signature/research-ms-loss-master/
+DATA:
+  NUM_INSTANCES: 10
+  NUM_WORKERS: 10
+  TEST_BATCHSIZE: 50
+  TEST_IMG_SOURCE: /data/home/shruti/voxceleb/fabnet/vox2_mp4/voxceleb_100_test.txt
+  TRAIN_BATCHSIZE: 50
+  TRAIN_IMG_SOURCE: /data/home/shruti/voxceleb/fabnet/vox2_mp4/voxceleb_100_train.txt
+INPUT:
+  DATA_LOADER: FabNet_Corr
+  DIM1: 128
+  DIM2: 255
+  EVAL: recall_at_k
+  FRAME_LENGTH: 100
+  MEAN: voxceleb_100_mean.npy
+  SAMPLER: random_identity_sampler
+  STD: voxceleb_100_std.npy
+  TRANSFORM: no_transform
+LOGGER:
+  LEVEL: 20
+  STREAM: stdout
+LOSSES:
+  MULTI_SIMILARITY_LOSS:
+    HARD_MINING: True
+    MARGIN: 0.1
+    SCALE_NEG: 40.0
+    SCALE_POS: 2.0
+    THRESH: 0.5
+  NAME: ms_loss
+MODEL:
+  BACKBONE:
+    LR_MUL: 1.0
+    NAME: resnet152
+  DEVICE: cuda
+  HEAD:
+    DIM: 256
+    IN_CHANNEL: 512
+    LR_MUL: 1.0
+    NAME: linear_norm
+  PRETRAIN: none
+  PRETRIANED_PATH: /data/home/shruti/voxceleb/
+  WEIGHT: 
+SAVE_DIR: /data/home/shruti/voxceleb/mdls_vox_ms_resnet152_fabnetCorr
+SOLVER:
+  BASE_LR: 0.0001
+  BIAS_LR_FACTOR: 1
+  CHECKPOINT_PERIOD: 10000
+  FINETURN_MODE_PATH: 
+  GAMMA: 0.1
+  IS_FINETURN: False
+  MAX_ITERS: 100000
+  MOMENTUM: 0.9
+  OPTIMIZER_NAME: Adam
+  RNG_SEED: 777
+  STEPS: [100000]
+  WARMUP_FACTOR: 0.01
+  WARMUP_ITERS: 0
+  WARMUP_METHOD: linear
+  WEIGHT_DECAY: 0.0005
+  WEIGHT_DECAY_BIAS: 0.0005
+VALIDATION:
+  IS_VALIDATION: True
+  VERBOSE: 400

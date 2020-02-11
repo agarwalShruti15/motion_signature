@@ -6,6 +6,7 @@
 # This source code is licensed under the LICENSE file in the root directory of this source tree.
 from ret_benchmark.data.registry import TRANSFORM
 from .standard_scalar import StandardScalar
+from .nothing_transform import Nothing
 
 def build_transforms(cfg, is_train=True):
     

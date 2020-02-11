@@ -93,9 +93,14 @@ class AUS2_190ausDataLoader(Dataset):
         while len(out_X)<1:
             # pick a random frame sequence of T length
             r_idx = np.random.choice(np.arange(len(aus)-self.T+1), 1)[0]
-            corr = np.corrcoef(y_lbl[r_idx:r_idx+self.T, :][:, self.feat_pair[:, 0]].T, 
-                               y_lbl[r_idx:r_idx+self.T, :][:, self.feat_pair[:, 1]].T)[0:len(self.feat_pair), 
-                                                                          len(self.feat_pair):].diagonal()
+            X = y_lbl[r_idx:r_idx+self.T, :].copy()
+            X = X - np.mean(X, axis=0, keepdims=True)
+            X = X / np.linalg.norm(X, axis=0, keepdims=True) # normalize
+        
+            X1 = X[:, self.feat_pair[:, 0]].copy()
+            X2 = X[:, self.feat_pair[:, 1]].copy()
+            corr = np.sum(X1 * X2, axis=0)            
+            
             if np.sum(np.isnan(corr))>0 and i<len(aus):
                 i = i+1
                 continue

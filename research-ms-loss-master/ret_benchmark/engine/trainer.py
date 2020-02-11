@@ -44,11 +44,11 @@ def do_train(
     end = time.time()
     for iteration, (images, targets) in enumerate(train_loader, start_iter):
 
-        if iteration % cfg.VALIDATION.VERBOSE == 0 or iteration == max_iter:
+        if (iteration % cfg.VALIDATION.VERBOSE == 0) or iteration == max_iter:
             model.eval()
             logger.info('Validation')
             feats, labels = feat_extractor(model, val_loader, logger=logger)
-
+            
             metric = build_evaluation(cfg)
             recall_curr = metric.eval(feats=feats, labels=labels, k=1)
 
@@ -59,6 +59,9 @@ def do_train(
                 checkpointer.save(f"best_model")
             else:
                 logger.info(f'{cfg.INPUT.EVAL} at iteration {iteration:06d}: {recall_curr:.3f}')
+                
+            del feats
+            del labels
 
         model.train()
         model.apply(set_bn_eval)
@@ -106,6 +109,10 @@ def do_train(
 
         if iteration % checkpoint_period == 0:
             checkpointer.save("model_{:06d}".format(iteration))
+            
+        del images
+        del targets
+        del feats
 
     total_training_time = time.time() - start_training_time
     total_time_str = str(datetime.timedelta(seconds=total_training_time))

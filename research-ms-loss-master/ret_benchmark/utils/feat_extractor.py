@@ -23,9 +23,13 @@ def feat_extractor(model, data_loader, logger=None):
             feats.append(out)
             labels.append(lbls)
 
-        if logger is not None and (i + 1) % 100 == 0:
-            logger.debug(f'Extract Features: [{i + 1}/{len(data_loader)}]')
         del out
+        del imgs
+        del lbls
+        del batch
+        
+        if logger is not None and (i + 1) % 700 == 0:
+            logger.debug(f'Extract Features: [{i + 1}/{len(data_loader)}]')
     feats = np.vstack(feats)
     #print(feats[0, :10], np.concatenate(labels, axis=0))
     #print(feats[0, :5], np.concatenate(labels, axis=0)[0, :5])

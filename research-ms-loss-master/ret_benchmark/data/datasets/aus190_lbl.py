@@ -84,8 +84,8 @@ class AUS190_LBLDataLoader(Dataset):
             img = img[:, :, 0].copy()
             
         # get the first 20 features to the y label and rest to aus embeddings
-        y_lbl = img[:, :20]
-        aus = img[:, :20]
+        y_lbl = img[:, :20].copy()
+        aus = img[:, :20].copy()
         
         # pick a sequence where the correlation is not nan
         out_X = []
@@ -93,15 +93,22 @@ class AUS190_LBLDataLoader(Dataset):
         while len(out_X)<1:
             # pick a random frame sequence of T length
             r_idx = np.random.choice(np.arange(len(aus)-self.T+1), 1)[0]
-            corr = np.corrcoef(y_lbl[r_idx:r_idx+self.T, :][:, self.feat_pair[:, 0]].T, 
-                               y_lbl[r_idx:r_idx+self.T, :][:, self.feat_pair[:, 1]].T)[0:len(self.feat_pair), 
-                                                                          len(self.feat_pair):].diagonal()
+            X = aus[r_idx:r_idx+self.T, :].copy()
+            X = X - np.mean(X, axis=0, keepdims=True)
+            X = X / np.linalg.norm(X, axis=0, keepdims=True) # normalize
+        
+            X1 = X[:, self.feat_pair[:, 0]].copy()
+            X2 = X[:, self.feat_pair[:, 1]].copy()
+        
+            corr = np.sum(X1 * X2, axis=0)
+        
             if np.sum(np.isnan(corr))>0 and i < len(aus):
                 i = i+1
                 continue
             else:
                 out_X = np.reshape(corr, (1, -1)).copy()
                 out_X[np.isnan(out_X)] = 0
+                img = []; X = []; X1 = []; X2 = []
     
         tensor = torch.from_numpy(out_X)    
         return tensor.float(), np.reshape(label, (1, -1)).astype(np.int64)
