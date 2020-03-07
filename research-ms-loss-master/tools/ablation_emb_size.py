@@ -103,10 +103,15 @@ def parse_args():
     return parser.parse_args()
 
 
-if __name__ == '__main__':    
+if __name__ == '__main__':
     args = parse_args()
     cfg.merge_from_file(args.cfg_file)
-    if cfg.SOLVER.TRAIN:
+        
+    # the embedding size ablation
+    emb_sz = [64, 128, 256, 1024]
+    cfg.MODEL.BACKBONE.NAME = 'resnet101'
+    for i in emb_sz:
+        cfg.MODEL.HEAD.DIM = i
+        cfg.SAVE_DIR = '/data/home/shruti/voxceleb/mdls_vox_ms_resnet101_Emb{}'.format(i)
         train(cfg)
-    else:
-        test(cfg)
+

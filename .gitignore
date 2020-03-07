@@ -20,5 +20,8 @@ research-ms-loss-master/obj/
 **/**/*.txt
 **/*.txt
 data/.nfs*
-baseline/results*
-
+baseline/result*/
+baseline/ECCV20_figures/
+baseline/VGG_DFDC_logs/
+baseline/cache/
+baseline/tsne_plots/

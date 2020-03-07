@@ -8,6 +8,7 @@ import multiprocessing
 from joblib import Parallel, delayed
 import natsort
 import time
+import re
 
 from sklearn.metrics import roc_curve, auc
 from sklearn.metrics.pairwise import cosine_similarity
@@ -21,134 +22,12 @@ from collections import Counter
 # I need the embeddings, each embedding should have a label and a name, filename
 # for each label get N embeddings to keep in the repo
 
-def im2col_sliding_strided(A, BSZ, stepsize=1):
-    # Parameters
-    m,n = A.shape
-    s0, s1 = A.strides
-    nrows = m-BSZ[0]+1
-    ncols = n-BSZ[1]+1
-    shp = BSZ[0],BSZ[1],nrows,ncols
-    strd = s0,s1,s0,s1
-
-    out_view = np.lib.stride_tricks.as_strided(A, shape=shp, strides=strd)
-    return out_view.reshape(BSZ[0]*BSZ[1],-1)[:,::stepsize]
-
-def load_file_names(bs_fldr, in_fldr, join_bsfldr=False):
-    if join_bsfldr:
-        return [os.path.join(bs_fldr, in_fldr, f) for f in os.listdir(os.path.join(bs_fldr, in_fldr)) if f.endswith('.npy')]
-    else:
-        return [os.path.join(in_fldr, f) for f in os.listdir(os.path.join(bs_fldr, in_fldr)) if f.endswith('.npy')]
-
-
-GG_train_files = ['__talking_against_wall', 
-                  '__outside_talking_still_laughing', 
-                  '__talking_angry_couch',
-                  '__podium_speech_happy',
-                  '__kitchen_still']
-GG_real_test_files = ['__outside_talking_pan_laughing',
-                      '__kitchen_pan']
-GG_fake_test_files = ['__talking_against_wall', 
-                      '__outside_talking_still_laughing', 
-                      '__talking_angry_couch',
-                      '__podium_speech_happy', 
-                      '__outside_talking_pan_laughing',
-                      '__kitchen_pan']
-
-
-# get all the identity specific train and test files for all available dataset
-def train_test_all_ids(bs_fldr):
-    
-    # REPO files are all the real files
-    train_dict = u.load_dict_file('/data/home/shruti/voxceleb/motion_signature/data/utils/leaders_100_train.txt', join_bsfldr=False, inbsfldr=bs_fldr) # leaders repo file
-    for k in ['bo_imposter', 'bs_imposter', 'ew_imposter', 'dt_imposter', 'hc_imposter', 'jb_imposter']:   # imposter videos
-        train_dict[k] = load_file_names(bs_fldr, k, join_bsfldr=False)
-    for k in range(1000):
-        cur_name = '{0:03d}'.format(k)
-        train_dict['FF_'+cur_name] = [os.path.join('FF_orig', cur_name + '.npy')]
-        
-    
-    # TEST files, two dict for real and fake
-    test_dict = {}; test_dict['real'] = {}; test_dict['fake'] = {}; 
-    #REAL
-    test_dict['real'] = u.load_dict_file('/data/home/shruti/voxceleb/motion_signature/data/utils/leaders_100_test.txt', join_bsfldr=False, inbsfldr=bs_fldr)
-    for k in range(1000):
-        cur_name = '{0:03d}'.format(k)
-        test_dict['real']['FF_'+cur_name] = [os.path.join('FF_orig', cur_name + '.npy')]
-    
-    #FAKE:leaders
-    fake_name = ['bo_faceswap', 'bs_faceswap', 'ew_faceswap', 'dt_faceswap', 'hc_faceswap', 'jb_faceswap']
-    lbl = ['bo', 'bs', 'ew', 'dt', 'hc', 'jb']
-    for i in range(len(lbl)):
-        test_dict['fake'][lbl[i]] = load_file_names(bs_fldr, fake_name[i], join_bsfldr=False)
-    
-    #FAKE: FaceForensics
-    for ff_fldr in ['FF_Deepfakes', 'FF_FaceSwap']:            
-        ff_files = load_file_names(bs_fldr, ff_fldr, join_bsfldr=False)
-        for k in range(1000):
-            cur_name = '{0:03d}'.format(k)
-            df = [f for f in ff_files if cur_name + '.npy' in f]
-            assert len(df)==1, f'{cur_name} {df} {ff_files}'
-            
-            if 'FF_'+cur_name not in list(test_dict['fake'].keys()):
-                test_dict['fake']['FF_'+cur_name] = df
-            else:
-                test_dict['fake']['FF_'+cur_name] = test_dict['fake']['FF_'+cur_name] + df
-                
-    # google dataset original videos divide the original in train and test
-    # identify the fake indentites 
-    GG_orig_allfiles = load_file_names(bs_fldr, 'GG_orig', join_bsfldr=False)
-    GG_fake_allfiles = load_file_names(bs_fldr, 'GG_fake', join_bsfldr=False)
-    
-    id_lbl = np.unique([f.split('/')[-1][:2] for f in GG_orig_allfiles])  # get the unique ids
-    for k in id_lbl:
-        
-        #real Train
-        orig_files = [f for f in GG_orig_allfiles if f.split('/')[-1][:2]==k and 
-                      np.any([x in f for x in GG_train_files])] # current file label
-        orig_files.sort()
-        train_dict['GG_'+k] = orig_files.copy()
-        
-        #real Test
-        orig_test_files = [f for f in GG_orig_allfiles if f.split('/')[-1][:2]==k and np.any([x in f for x in GG_real_test_files])] # current file label
-        test_dict['real']['GG_'+k] = orig_test_files.copy()
-        
-        #fake
-        fake_files = [f for f in GG_fake_allfiles if (f'_{k}_' in f.split('/')[-1][2:]) and np.any([x in f for x in GG_fake_test_files])] # current file label
-        fake_files.sort()
-        test_dict['fake']['GG_'+k] = fake_files.copy()
-        
-    # steve bushemi and jennifer lawrence
-    train_dict['steve_b'] = load_file_names(bs_fldr, 'steve_b', join_bsfldr=False)
-    train_dict['jen_l'] = load_file_names(bs_fldr, 'jennifer_l', join_bsfldr=False)
-    # remove pW7TbJJMVak.mp4 file which is ground-truth from 
-    train_dict['jen_l'] = [f for f in train_dict['jen_l'] if 'pW7TbJJMVak_0' not in f]
-    
-    # steve faceswap
-    test_dict['fake']['steve_b'] = load_file_names(bs_fldr, 'steve_faceswap', join_bsfldr=False)
-    test_dict['real']['jen_l'] = ['jennifer_l/pW7TbJJMVak_0.npy']
-        
-    return train_dict, test_dict
-
-
-
-def add_colorbar(im, aspect=20, pad_fraction=0.5, **kwargs):
-    from mpl_toolkits import axes_grid1
- 
-    """Add a vertical color bar to an image plot."""
-    divider = axes_grid1.make_axes_locatable(im.axes)
-    width = axes_grid1.axes_size.AxesY(im.axes, aspect=1./aspect)
-    pad = axes_grid1.axes_size.Fraction(pad_fraction, width)
-    current_ax = plt.gca()
-    cax = divider.append_axes("right", size=width, pad=pad)
-    plt.sca(current_ax)
-    return im.axes.figure.colorbar(im, cax=cax, **kwargs)
-
 class Repo(object):
     """class to get the repo per label"""
     def __init__(self, bs_fldr, frames, step, pool_func, N_per_id):
         super(Repo, self).__init__()
-        self.emb = [] # to store the embeddings
-        self.label = [] # integer labels
+        self.emb = None # to store the embeddings
+        self.label = None # integer labels
         self.label_dict = [] # integer dict to string dict
         self.bs_fldr = bs_fldr
         self.frames = frames
@@ -182,7 +61,7 @@ class Repo(object):
         # pool the features according to pool_params
         # for vgg pool all 100 frames, whereas for resnet3D pool only 84 frames. 
         # for then step to another window to pool. The pool function is given in the params
-        col_feat = im2col_sliding_strided(feat, (self.frames, feat.shape[1]), stepsize=self.step).T
+        col_feat = u.im2col_sliding_strided(feat, (self.frames, feat.shape[1]), stepsize=self.step).T
         tmp = self.pool_func(np.reshape(col_feat, (col_feat.shape[0], self.frames, feat.shape[1])), axis=1)
 
         n1 = int(n1*len(tmp))
@@ -194,6 +73,13 @@ class Repo(object):
         
         return tmp
         
+    def remove_ids(self, id_list):
+        
+        int_lbl = np.array([np.argwhere(f==self.label_dict).ravel() for f in id_list]).ravel()
+        rm_idx = np.array([f in int_lbl for f in self.label])
+        self.label = self.label[~rm_idx].copy()
+        self.emb = self.emb[~rm_idx, :].copy()
+        self.label_dict = np.array([self.label_dict[f] for f in range(len(self.label_dict)) if f not in int_lbl])
         
     # n1, n2 gives the part of the video to use
     def add_ids(self, in_file_dict, n1, n2):
@@ -220,12 +106,17 @@ class Repo(object):
                 all_id_feat = all_id_feat[idx, :].copy()
                 
             # add the labels and embeddings
-            self.label = self.label + [np.zeros((len(all_id_feat), ), dtype=np.int32)+bas_label+k]
-            self.label_dict = self.label_dict + [all_keys[k]]
-            self.emb = self.emb + [all_id_feat]
+            if self.label is None:
+                self.label = np.zeros((len(all_id_feat), ), dtype=np.int32)+bas_label+k
+                self.emb = all_id_feat.copy()
+                self.label_dict = np.array([all_keys[k]])
+            else:
+                self.label = np.concatenate((self.label, np.zeros((len(all_id_feat), ), dtype=np.int32)+bas_label+k))
+                self.emb = np.concatenate((self.emb, all_id_feat), axis=0)
+                self.label_dict = np.concatenate((self.label_dict, [all_keys[k]]), axis=0)
+                
             all_id_feat = []
-            
-        # need to build the repo again
+                    
         self.pca = None
         self.pcaEmb = None
         self.knnrepo = None
@@ -235,11 +126,8 @@ class Repo(object):
         self.label_dict = np.array(self.label_dict)
         print(f'Number of labels {len(self.label_dict)}')        
         
-        # perform PCA first, store the pca embeddings, store the pca, store the KDD
-        X = np.vstack(self.emb)
-        X = X - np.mean(X, axis=1, keepdims=True)        
+        X = self.emb - np.mean(self.emb, axis=1, keepdims=True)        
         X = X / np.linalg.norm(X, axis=1, keepdims=True) # normalize
-        self.label = np.concatenate(self.label, axis=0)
         if N_pca_comp < 0:
             # take all the comp
             N_pca_comp = X.shape[1]
@@ -263,10 +151,8 @@ class Repo(object):
         print(f'Number of labels {len(self.label_dict)}')        
         
         # perform PCA first, store the pca embeddings, store the pca, store the KDD
-        X = np.vstack(self.emb)
-        X = X - np.mean(X, axis=1, keepdims=True)        
+        X = self.emb - np.mean(self.emb, axis=1, keepdims=True)        
         X = X / np.linalg.norm(X, axis=1, keepdims=True) # normalize
-        self.label = np.concatenate(self.label, axis=0)
         self.knnrepo = KDTree(X, leaf_size=100)
         X = []
         self.emb = []
@@ -283,13 +169,9 @@ class Repo(object):
         
         self.label_dict = np.array(self.label_dict)
         print(f'Number of labels {len(self.label_dict)}')        
-        
-        # perform PCA first, store the pca embeddings, store the pca, store the KDD
-        X = np.vstack(self.emb)
-        
-        X = X - np.mean(X, axis=1, keepdims=True)
+                
+        X = self.emb - np.mean(self.emb, axis=1, keepdims=True)
         X = X / np.linalg.norm(X, axis=1, keepdims=True) # normalize
-        self.label = np.concatenate(self.label, axis=0)
         self.emb = X.copy()
         X = []
         
@@ -347,7 +229,7 @@ class Repo(object):
         for ids in in_test_dict.keys():
             
             # ensure this key should be in the repo
-            assert np.any(ids==self.label_dict), f'test label should be in the repo dict {ids}'
+            #assert np.any(ids==self.label_dict), f'test label should be in the repo dict {ids}'
             
             files = in_test_dict[ids]
             for f in files:
@@ -506,8 +388,8 @@ class Repo_maj_pool(object):
         pred_lbl = self.label[cur_max_id][:, np.newaxis]
         
         # get the majority class for the pool params
-        pool_lbl = im2col_sliding_strided(pred_lbl, (self.frames, 1), stepsize=self.step).T
-        pool_dist = im2col_sliding_strided(cur_max_dist, (self.frames, 1), stepsize=self.step).T
+        pool_lbl = u.im2col_sliding_strided(pred_lbl, (self.frames, 1), stepsize=self.step).T
+        pool_dist = u.im2col_sliding_strided(cur_max_dist, (self.frames, 1), stepsize=self.step).T
         
         info = np.array([get_stat(pool_lbl[i, :], pool_dist[i, :]) for i in range(len(pool_dist))])
 
@@ -552,3 +434,84 @@ class Repo_maj_pool(object):
             out_df = pd.concat(list(out_df.values()), ignore_index=True, sort=False)
             
         return out_df
+
+
+
+
+
+class Repo_Time_NN(object):
+    """class to get the repo per label"""
+    def __init__(self, bs_fldr, path_file, frames, parallel=False):
+        super(Repo_Time_NN, self).__init__()
+        self.bs_fldr = bs_fldr
+        self.frames = frames
+        self.path_file = path_file
+        self.parallel = parallel
+        self.path_list = []
+        self.label_list = []
+        self.mean = np.reshape(np.load('/data/home/shruti/voxceleb/motion_signature/research-ms-loss-master/voxceleb_100_mean.npy'), 
+                               (1, -1))
+        self.std = np.reshape(np.load('/data/home/shruti/voxceleb/motion_signature/research-ms-loss-master/voxceleb_100_std.npy'), 
+                              (1, -1))
+        
+        # get the file names, labels, and label dict 
+        self._load_data()
+        
+        # build a repo with all the files
+        self.build_repo()
+                
+    def _load_data(self):
+        with open(self.path_file, 'r') as f:
+            for line in f:
+                _path, _label = re.split(r",| ", line.strip())
+                self.path_list.append(_path)
+                self.label_list.append(int(_label))
+                
+        self.path_list = np.array(self.path_list)
+        self.label_list = np.array(self.label_list)
+        self.uniq_lbls, _ = np.unique(self.label_list, return_counts=True)
+        
+        
+    def build_repo(self):
+        
+        self.emb = {}
+        for i in range(len(self.path_list)):
+            
+            X = np.load(os.path.join(self.bs_fldr, self.path_list[i]))
+            X = X / np.linalg.norm(X, axis=1, keepdims=True) # normalize
+            X = (X - self.mean)/self.std
+            
+            # select a random sequence
+            np.random.seed(0)
+            idx = np.random.choice(np.arange(len(X)-self.frames), 1)[0]
+            self.emb[i] = np.reshape(X[idx:idx+self.frames, :].copy(), (1, -1))
+            
+            del X
+            
+        self.emb = np.vstack(list(self.emb.values()))
+        print(self.emb.shape)
+        
+    def get_closest_label(self, in_emb, in_test_emb, in_label, in_lbl_list):
+        
+        dist = np.sum(np.abs(in_emb - in_test_emb), axis=1)/len(in_emb)
+        pred_id = np.argmin(dist)
+        pred_lbl = in_lbl_list[pred_id]
+        return [pred_lbl, in_label, dist[pred_id], pred_id]
+        
+        
+    def recall_at_k(self, parallel):
+        
+        # for every vector get the best match label
+        out_df = np.zeros((len(self.emb), 4))
+        for f in range(len(self.emb)):
+            
+            val_idx = np.ones((len(self.emb), ), dtype=np.bool)
+            val_idx[f] = False
+            dist = np.sum(np.abs(self.emb[val_idx, :] - self.emb[[f], :]), axis=1)/self.emb.shape[1]
+            pred_id = np.argmin(dist)
+            pred_lbl = self.label_list[val_idx][pred_id]            
+            
+            out_df[f, :] = [pred_lbl, self.label_list[f], dist[pred_id], pred_id]
+            del val_idx
+        
+        return pd.DataFrame(data=out_df, columns=['pred_label', 'true_label', 'dist', 'index'])

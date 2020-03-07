@@ -1,0 +1,50 @@
+# Copyright (c) Malong Technologies Co., Ltd.
+# All rights reserved.
+#
+# Contact: github@malong.com
+#
+# This source code is licensed under the LICENSE file in the root directory of this source tree.
+
+# Data option
+CODE_PATH: /data/home/shruti/voxceleb/motion_signature/research-ms-loss-master/
+
+DATA:
+  TEST_IMG_SOURCE: /data/home/shruti/voxceleb/fabnet/vox2_test_mp4/voxceleb_100_test.txt
+  TEST_BATCHSIZE: 256
+  NUM_WORKERS: 10 #number of data loader workers
+  NUM_INSTANCES: 8 # number of instances per label in one batch
+
+# Input option
+INPUT:
+  TRANSFORM: standard_scalar
+  MEAN: voxceleb_100_mean.npy
+  STD: voxceleb_100_std.npy
+  DATA_LOADER: FabNet
+  SAMPLER: random_identity_sampler
+  EVAL: recall_at_k
+  FRAME_LENGTH: 25 # the number of frames to consider (30 fps frame rate for leaders and 25 for voxceleb) 
+  PERFORM_METRIC: False
+
+# Checkpoint save dir
+SAVE_DIR: /data/home/shruti/voxceleb/temp
+
+# Model parameters
+MODEL: 
+  BACKBONE:
+    NAME: resnet101 #resnet50 #alexnet #vgg16_bn #bninception
+    LR_MUL: 1.0
+  HEAD:
+    NAME: linear_norm
+    DIM: 512
+    IN_CHANNEL: 1024 #1024 # alexnet # 1024 # vggnet
+    LR_MUL: 1.0
+   
+  #PRETRAIN: none
+  #PRETRIANED_PATH: /data/home/shruti/voxceleb/ 
+  PRETRAIN: resume
+  PRETRIANED_PATH: /data/home/shruti/voxceleb/ms_resnet101_fabnet_vox_f25_00003/best_model.pth
+
+SOLVER:
+  RNG_SEED: 777
+  TRAIN: False
+  

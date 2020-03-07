@@ -28,8 +28,9 @@ def feat_extractor(model, data_loader, logger=None):
         del lbls
         del batch
         
-        if logger is not None and (i + 1) % 700 == 0:
+        if logger is not None and (i + 1) % 1000 == 0:
             logger.debug(f'Extract Features: [{i + 1}/{len(data_loader)}]')
+            break
     feats = np.vstack(feats)
     #print(feats[0, :10], np.concatenate(labels, axis=0))
     #print(feats[0, :5], np.concatenate(labels, axis=0)[0, :5])

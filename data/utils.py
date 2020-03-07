@@ -105,7 +105,6 @@ def compose_transforms(meta, resize=256, center_crop=True,
     transform_list.append(normalize)
     return transforms.Compose(transform_list)
 
-
 def vgg_one_vid(in_fldr, fl_n, out_file, emb_model, openface_path, gpu):
     
     # load the model for frame embeddings
@@ -148,3 +147,55 @@ def vgg_one_vid(in_fldr, fl_n, out_file, emb_model, openface_path, gpu):
         
     except Exception as e:
         print('{} {}'.format(cur_vid, e))
+
+
+def vgg_fab_one_vid(in_fldr, fl_n, vgg_model, fab_model, openface_path, vgg_outfile, fab_outfile):
+    
+    # load the model for frame embeddings
+    cur_vid = os.path.join(in_fldr, fl_n + '.mp4')
+    tmp_fldr = '_'.join(in_fldr.split('/')[-2:]) + '_' + fl_n # create a folder which is unique to this file 
+    
+    #vgg transform
+    preproc_transforms_vgg = compose_transforms(meta=vgg_model.meta, center_crop=False )    
+    
+    try:
+        
+        frm_fldr = save_openface_frame(cur_vid, tmp_fldr, crop_sz, openface_path)
+        filenms = [f for f in os.listdir(frm_fldr) if f.endswith('.bmp')]
+        
+        # init the array
+        vgg_emb = np.zeros((len(filenms), vgg_emb_n)).astype(np.float32)
+        fab_emb = np.zeros((len(filenms), emb_n)).astype(np.float32)
+                    
+        for i in range(len(filenms)):
+            
+            filenm = 'frame_det_00_{0:06d}.bmp'.format(i+1)
+            if os.path.exists(os.path.join(frm_fldr, filenm)):
+                
+                # get vgg emb
+                im = cv2.cvtColor(cv2.imread(os.path.join(frm_fldr, filenm)), cv2.COLOR_BGR2RGB)
+                im = Image.fromarray(im)
+                # extract vgg
+                im_vgg = preproc_transforms_vgg(im).view(1, 3, 224, 224).float()
+                if torch.cuda.is_available():
+                    im_vgg = im_vgg.cuda()  #assumes that you're using GPU
+                vgg_emb[i, :] = vgg_model(im_vgg).squeeze().cpu().detach().numpy().copy()
+                del im; del im_vgg;
+                
+                # extract fabnet 
+                cur_frame = plt.imread(os.path.join(frm_fldr, filenm))
+                fab_emb[i, :] = get_video_frame_emb(cur_frame, fab_model)
+                del cur_frame
+                
+            else:
+                print(cur_vid, i)
+        
+        # clear the aligned images
+        shutil.rmtree(tmp_fldr)
+        
+        # save the output
+        np.save(vgg_outfile, vgg_emb.astype(np.float32))
+        np.save(fab_outfile, fab_emb.astype(np.float32))        
+        
+    except Exception as e:
+        print('{} {}'.format(cur_vid, e))    

@@ -100,7 +100,12 @@ class FabNetDataLoader(Dataset):
         
         # pick a random frame sequence of T length
         r_idx = np.random.choice(np.arange(len(img)-self.T+1), 1)[0]
-        img = img[r_idx:r_idx+self.T, :].copy()
+        
+        # handle one frame
+        if self.T == 1:
+            img = img[[r_idx], :].copy()
+        else:
+            img = img[r_idx:r_idx+self.T, :].copy()
                         
         if self.transforms is not None:
             img = self.transforms(img)

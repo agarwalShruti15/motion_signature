@@ -70,10 +70,12 @@ _C.INPUT.DIM1 = 100
 _C.INPUT.DIM2 = 256
 _C.INPUT.EVAL = 'recall_at_k'
 _C.INPUT.FRAME_LENGTH = 150 # the number of frames to consider (30 fps frame rate for leaders and 25 for voxceleb)
+_C.INPUT.PERFORM_METRIC = True
 
 # SOLVER
 _C.SOLVER = CN()
 _C.SOLVER.IS_FINETURN = False
+_C.SOLVER.TRAIN = True
 _C.SOLVER.FINETURN_MODE_PATH = ''
 _C.SOLVER.MAX_ITERS = 4000
 _C.SOLVER.STEPS = [1000, 2000, 3000]

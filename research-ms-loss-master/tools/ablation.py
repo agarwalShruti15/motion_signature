@@ -103,10 +103,14 @@ def parse_args():
     return parser.parse_args()
 
 
-if __name__ == '__main__':    
+if __name__ == '__main__':
     args = parse_args()
     cfg.merge_from_file(args.cfg_file)
-    if cfg.SOLVER.TRAIN:
-        train(cfg)
-    else:
-        test(cfg)
+    
+    # the architecture ablation
+    arch_name = ['resnet18', 'resnet50', 'resnet152']
+    cfg.MODEL.HEAD.DIM = 512
+    for i in arch_name:
+        cfg.MODEL.BACKBONE.NAME = i
+        cfg.SAVE_DIR = '/data/home/shruti/voxceleb/mdls_vox_ms_resnet101_Arch{}'.format(i)
+        train(cfg)    

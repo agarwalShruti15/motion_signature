@@ -9,6 +9,7 @@ from .resnet18 import ResNet18
 from .only_fc import Only_FC
 from .resnet101 import ResNet101
 from .resnet152 import ResNet152
+from .RNN import DecoderRNN
 
 def build_backbone(cfg):
     assert cfg.MODEL.BACKBONE.NAME in BACKBONES, f"backbone {cfg.MODEL.BACKBONE} is not defined"

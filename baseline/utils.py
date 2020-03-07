@@ -133,3 +133,379 @@ def save_fig(pred_prob, fig_fldr, real_n, fake_n, fig_nm, y_in, l_name):
     plt.savefig('{}/{}_hist.png'.format(fig_fldr, fig_nm))
     plt.close()
     return plotROC(pred_prob, y_in, '{}/{}_roc.png'.format(fig_fldr, fig_nm))
+
+
+def im2col_sliding_strided(A, BSZ, stepsize=1):
+    # Parameters
+    m,n = A.shape
+    s0, s1 = A.strides
+    nrows = m-BSZ[0]+1
+    ncols = n-BSZ[1]+1
+    shp = BSZ[0],BSZ[1],nrows,ncols
+    strd = s0,s1,s0,s1
+
+    out_view = np.lib.stride_tricks.as_strided(A, shape=shp, strides=strd)
+    return out_view.reshape(BSZ[0]*BSZ[1],-1)[:,::stepsize]
+
+def load_file_names(bs_fldr, in_fldr, join_bsfldr=False):
+    if join_bsfldr:
+        return [os.path.join(bs_fldr, in_fldr, f) for f in os.listdir(os.path.join(bs_fldr, in_fldr)) if f.endswith('.npy')]
+    else:
+        return [os.path.join(in_fldr, f) for f in os.listdir(os.path.join(bs_fldr, in_fldr)) if f.endswith('.npy')]
+
+
+GG_train_files = ['__talking_against_wall', 
+                  '__outside_talking_still_laughing', 
+                  '__talking_angry_couch',
+                  '__podium_speech_happy',
+                  '__kitchen_still']
+GG_real_test_files = ['__outside_talking_pan_laughing',
+                      '__kitchen_pan']
+GG_fake_test_files = ['__talking_against_wall', 
+                      '__outside_talking_still_laughing', 
+                      '__talking_angry_couch',
+                      '__podium_speech_happy', 
+                      '__outside_talking_pan_laughing',
+                      '__kitchen_pan',
+                      '__kitchen_still']
+
+# get all the identity specific train and test files for all available dataset
+def train_test_all_ids(bs_fldr):
+    
+    # REPO files are all the real files
+    train_dict = load_dict_file('/data/home/shruti/voxceleb/motion_signature/data/utils/leaders_100_train.txt', join_bsfldr=False, inbsfldr=bs_fldr) # leaders repo file
+    for k in ['bo_imposter', 'bs_imposter', 'ew_imposter', 'dt_imposter', 'hc_imposter', 'jb_imposter']:   # imposter videos
+        train_dict[k] = load_file_names(bs_fldr, k, join_bsfldr=False)
+        
+    ff_orig_files = load_file_names(bs_fldr, 'FF_orig', join_bsfldr=False)
+    for k in range(1000):
+        cur_name = '{0:03d}'.format(k)
+        df = [f for f in ff_orig_files if cur_name + '.npy' in f]
+        if len(df)>0:
+            train_dict['FF_'+cur_name] = df
+        
+    
+    # TEST files, two dict for real and fake
+    test_dict = {}; test_dict['real'] = {}; test_dict['fake'] = {}; 
+    #REAL
+    test_dict['real'] = load_dict_file('/data/home/shruti/voxceleb/motion_signature/data/utils/leaders_100_test.txt', join_bsfldr=False, inbsfldr=bs_fldr)
+    for k in range(1000):
+        cur_name = '{0:03d}'.format(k)
+        df = [f for f in ff_orig_files if cur_name + '.npy' in f]
+        if len(df)>0:
+            test_dict['real']['FF_'+cur_name] = df
+    
+    #FAKE:leaders
+    fake_name = ['bo_faceswap', 'bs_faceswap', 'ew_faceswap', 'dt_faceswap', 'hc_faceswap', 'jb_faceswap']
+    lbl = ['bo', 'bs', 'ew', 'dt', 'hc', 'jb']
+    for i in range(len(lbl)):
+        test_dict['fake'][lbl[i]] = load_file_names(bs_fldr, fake_name[i], join_bsfldr=False)
+    
+    #FAKE: FaceForensics
+    for ff_fldr in ['FF_Deepfakes', 'FF_FaceSwap']:            
+        ff_files = load_file_names(bs_fldr, ff_fldr, join_bsfldr=False)
+        for k in range(1000):
+            cur_name = '{0:03d}'.format(k)
+            df = [f for f in ff_files if cur_name + '.npy' in f]
+            if len(df)>0:            
+                if 'FF_'+cur_name not in list(test_dict['fake'].keys()):
+                    test_dict['fake']['FF_'+cur_name] = df
+                else:
+                    test_dict['fake']['FF_'+cur_name] = test_dict['fake']['FF_'+cur_name] + df
+                
+    # google dataset original videos divide the original in train and test
+    # identify the fake indentites 
+    GG_orig_allfiles = load_file_names(bs_fldr, 'GG_orig', join_bsfldr=False)
+    GG_fake_allfiles = load_file_names(bs_fldr, 'GG_fake', join_bsfldr=False)
+    
+    id_lbl = np.unique([f.split('/')[-1][:2] for f in GG_orig_allfiles])  # get the unique ids
+    for k in id_lbl:
+        
+        #real Train
+        orig_files = [f for f in GG_orig_allfiles if f.split('/')[-1][:2]==k and 
+                      np.any([x in f for x in GG_train_files])] # current file label
+        orig_files.sort()
+        train_dict['GG_'+k] = orig_files.copy()
+        
+        #real Test
+        orig_test_files = [f for f in GG_orig_allfiles if f.split('/')[-1][:2]==k and np.any([x in f for x in GG_real_test_files])] # current file label
+        test_dict['real']['GG_'+k] = orig_test_files.copy()
+        
+        #fake
+        fake_files = [f for f in GG_fake_allfiles if (f'_{k}_' in f.split('/')[-1][2:]) and np.any([x in f for x in GG_fake_test_files])] # current file label
+        fake_files.sort()
+        test_dict['fake']['GG_'+k] = fake_files.copy()    
+    
+    # DFDC dataset original videos divide the original in train and test
+    # identify the fake indentites 
+    DFDC_orig_allfiles = load_file_names(bs_fldr, 'DFDC_orig', join_bsfldr=False)
+    DFDC_fake_allfiles = load_file_names(bs_fldr, 'DFDC_fake', join_bsfldr=False)
+    
+    id_lbl = np.unique([f.split('/')[-1].split('_')[0] for f in DFDC_orig_allfiles])  # get the unique ids
+    # remove fake files where either the face or the behavior id is not in the original dataset
+    print(f'before {len(DFDC_fake_allfiles)}')
+    DFDC_fake_allfiles = [f for f in DFDC_fake_allfiles if f.split('/')[-1].split('_')[0] in id_lbl and f.split('/')[-1].split('_')[1] in id_lbl]
+    print(f'after {len(DFDC_fake_allfiles)}')
+    
+    for k in id_lbl:
+        
+        #real Train
+        orig_files = [f for f in DFDC_orig_allfiles if f.split('/')[-1].split('_')[0]==k] # current file label
+        np.random.shuffle(orig_files)
+        tr_n = int(0.8*len(orig_files))
+        train_dict['DFDC_' + k] = orig_files[:tr_n].copy()
+        
+        #real Test
+        test_dict['real']['DFDC_'+k] = orig_files[tr_n:].copy()
+        
+        #fake
+        test_dict['fake']['DFDC_'+k] = [f for f in DFDC_fake_allfiles if f.split('/')[-1].split('_')[0]==k] # current file label
+    
+        # CELEB-DF dataset
+    CDF_orig_allfiles = load_file_names(bs_fldr, 'celeb_real', join_bsfldr=False)
+    CDF_fake_allfiles = load_file_names(bs_fldr, 'celeb_fake', join_bsfldr=False)
+    
+    id_lbl = np.unique([f.split('/')[-1].split('_')[0] for f in CDF_orig_allfiles])  # get the unique ids    
+    for k in id_lbl:
+        
+        #real Train
+        orig_files = [f for f in CDF_orig_allfiles if f.split('/')[-1].split('_')[0]==k] # current file label
+        train_dict['CDF_' + k] = orig_files.copy()
+        
+        #real Test
+        test_dict['real']['CDF_'+k] = orig_files.copy()
+        
+        #fake
+        test_dict['fake']['CDF_'+k] = [f for f in CDF_fake_allfiles if f.split('/')[-1].split('_')[1]==k] # current file label
+        
+    # add new test videos for Jennifer Lawerence
+    #train_dict['CDF_id12'] = train_dict['CDF_id12'] + [f for f in jen_l_v if 'pW7TbJJMVak_0' not in f and 'real.npy' not in f]    
+    test_dict['real']['CDF_id12'] = test_dict['real']['CDF_id12'] + ['jennifer_l/real.npy', 'jennifer_l/pW7TbJJMVak_0.npy'] #
+    
+    
+    # IN wild
+    # steve bushemi and jennifer lawrence
+    train_dict['inwild_sb'] = load_file_names(bs_fldr, 'steve_b', join_bsfldr=False)    
+    
+    # steve faceswap
+    test_dict['fake']['inwild_sb'] = load_file_names(bs_fldr, 'steve_faceswap', join_bsfldr=False)
+    
+    
+    # in wild dataset
+    inwild_orig_allfiles = load_file_names(bs_fldr, 'inwild_orig', join_bsfldr=False)
+    inwild_fake_allfiles = load_file_names(bs_fldr, 'inwild_fake', join_bsfldr=False)
+    
+    id_lbl = np.unique([f.split('/')[-1].split('_')[0] for f in inwild_orig_allfiles])  # get the unique ids
+    for k in id_lbl:
+        
+        #real Train
+        orig_files = [f for f in inwild_orig_allfiles if f.split('/')[-1].split('_')[0]==k] # current file label
+        
+        # divide in train and test, there are four identities (billie ellish, angela office, bill hader, tom crusie)
+        # for bill hader and angela office remove the test-fake utterance from the repo and add it to the test set instead
+        #bh_real_test = ['bh_zS1Aee2X3Yc_5', 'bh_zS1Aee2X3Yc_6', 'bh_zS1Aee2X3Yc_8']
+        bh_real_test = ['bh_zS1Aee2X3Yc_2', 'bh_zS1Aee2X3Yc_3', 'bh_zS1Aee2X3Yc_4', 'bh_XGr_yXtJ170', 'bh_zS1Aee2X3Yc_10'] #,
+        
+        if k == 'bh':
+            tr_files = [f for f in orig_files if not np.any([x in f for x in bh_real_test])]
+            ts_files = [f for f in orig_files if np.any([x in f for x in bh_real_test])]
+            train_dict['inwild_' + k] = tr_files.copy()
+            test_dict['real']['inwild_'+k] = ['inwild_orig/bh_XGr_yXtJ170_3.npy', 
+                                              'inwild_orig/bh_XGr_yXtJ170_5.npy', 
+                                              'inwild_orig/bh_XGr_yXtJ170_6.npy', 
+                                              'inwild_orig/bh_XGr_yXtJ170_8.npy', 
+                                              'inwild_orig/bh_XGr_yXtJ170_10.npy'] #ts_files.copy() #
+            
+        if k == 'an':
+            tr_files = [f for f in orig_files if not np.any([x in f for x in ['an_w8TeV93Ji7M_9']])]
+            ts_files = [f for f in orig_files if np.any([x in f for x in ['an_w8TeV93Ji7M_9']])]
+            train_dict['inwild_' + k] = tr_files.copy()
+            test_dict['real']['inwild_'+k] = ts_files.copy()            
+            
+        if k == 'be':
+            train_dict['inwild_' + k] = orig_files.copy()
+            test_dict['fake']['inwild_'+k] = ['inwild_fake/an_be_03.npy'] # current file label  
+            
+        if k == 'tc':
+            train_dict['inwild_' + k] = orig_files.copy()
+            test_dict['fake']['inwild_'+k] = ['inwild_fake/bh_tc_01.npy'] # current file label  
+    
+    return train_dict, test_dict
+
+
+
+# get all the identity specific train and test files for all available dataset
+def train_test_half_vids(bs_fldr):
+    
+    # REPO files are all the real files
+    train_dict = load_dict_file('/data/home/shruti/voxceleb/motion_signature/data/utils/leaders_100_train.txt', join_bsfldr=False, inbsfldr=bs_fldr) # leaders repo file
+    for k in ['bo_imposter', 'bs_imposter', 'ew_imposter', 'dt_imposter', 'hc_imposter', 'jb_imposter']:   # imposter videos
+        train_dict[k] = load_file_names(bs_fldr, k, join_bsfldr=False)
+    test_dict = {}; test_dict['real'] = {}; test_dict['fake'] = {}
+    #REAL
+    test_dict['real'] = load_dict_file('/data/home/shruti/voxceleb/motion_signature/data/utils/leaders_100_test.txt', join_bsfldr=False, inbsfldr=bs_fldr)    
+    #FAKE:leaders
+    fake_name = ['bo_faceswap', 'bs_faceswap', 'ew_faceswap', 'dt_faceswap', 'hc_faceswap', 'jb_faceswap']
+    lbl = ['bo', 'bs', 'ew', 'dt', 'hc', 'jb']
+    for i in range(len(lbl)):
+        test_dict['fake'][lbl[i]] = load_file_names(bs_fldr, fake_name[i], join_bsfldr=False)
+        
+    
+    # Face-Forensics
+    ff_orig_files = load_file_names(bs_fldr, 'FF_orig', join_bsfldr=False)
+    for k in range(1000):
+        cur_name = '{0:03d}'.format(k)
+        df = [f for f in ff_orig_files if cur_name + '.npy' in f]
+        if len(df)>0:
+            train_dict['FF_'+cur_name] = df    
+    for k in range(1000):
+        cur_name = '{0:03d}'.format(k)
+        df = [f for f in ff_orig_files if cur_name + '.npy' in f]
+        if len(df)>0:
+            test_dict['real']['FF_'+cur_name] = df
+    #FAKE: FaceForensics
+    for ff_fldr in ['FF_Deepfakes', 'FF_FaceSwap']:            
+        ff_files = load_file_names(bs_fldr, ff_fldr, join_bsfldr=False)
+        for k in range(1000):
+            cur_name = '{0:03d}'.format(k)
+            df = [f for f in ff_files if cur_name + '.npy' in f]
+            if len(df)>0:            
+                if 'FF_'+cur_name not in list(test_dict['fake'].keys()):
+                    test_dict['fake']['FF_'+cur_name] = df
+                else:
+                    test_dict['fake']['FF_'+cur_name] = test_dict['fake']['FF_'+cur_name] + df
+                
+    # google dataset original videos divide the original in train and test
+    # identify the fake indentites 
+    GG_orig_allfiles = load_file_names(bs_fldr, 'GG_orig', join_bsfldr=False)
+    GG_fake_allfiles = load_file_names(bs_fldr, 'GG_fake', join_bsfldr=False)
+    
+    id_lbl = np.unique([f.split('/')[-1][:2] for f in GG_orig_allfiles])  # get the unique ids
+    for k in id_lbl:
+        
+        #real Train
+        orig_files = [f for f in GG_orig_allfiles if f.split('/')[-1][:2]==k and 
+                      np.any([x in f for x in GG_fake_test_files])] # current file label
+        orig_files.sort()
+        train_dict['GG_'+k] = orig_files.copy()
+        
+        #real Test
+        orig_test_files = [f for f in GG_orig_allfiles if f.split('/')[-1][:2]==k and np.any([x in f for x in GG_fake_test_files])] # current file label
+        test_dict['real']['GG_'+k] = orig_test_files.copy()
+        
+        #fake
+        fake_files = [f for f in GG_fake_allfiles if (f'_{k}_' in f.split('/')[-1][2:]) and np.any([x in f for x in GG_fake_test_files])] # current file label
+        fake_files.sort()
+        test_dict['fake']['GG_'+k] = fake_files.copy()
+    
+    
+    # DFDC dataset original videos divide the original in train and test
+    # identify the fake indentites 
+    DFDC_orig_allfiles = load_file_names(bs_fldr, 'DFDC_orig', join_bsfldr=False)
+    DFDC_fake_allfiles = load_file_names(bs_fldr, 'DFDC_fake', join_bsfldr=False)
+    
+    id_lbl = np.unique([f.split('/')[-1].split('_')[0] for f in DFDC_orig_allfiles])  # get the unique ids
+    
+    # remove fake files where either the face or the behavior id is not in the original dataset
+    print(f'before {len(DFDC_fake_allfiles)}')
+    DFDC_fake_allfiles = [f for f in DFDC_fake_allfiles if f.split('/')[-1].split('_')[0] in id_lbl and f.split('/')[-1].split('_')[1] in id_lbl]
+    print(f'after {len(DFDC_fake_allfiles)}')
+    
+    for k in id_lbl:
+        
+        #real Train
+        orig_files = [f for f in DFDC_orig_allfiles if f.split('/')[-1].split('_')[0]==k] # current file label
+        train_dict['DFDC_' + k] = orig_files.copy()
+        
+        #real Test
+        test_dict['real']['DFDC_'+k] = orig_files.copy()
+        
+        #fake
+        test_dict['fake']['DFDC_'+k] = [f for f in DFDC_fake_allfiles if f.split('/')[-1].split('_')[0]==k] # current file label
+    
+    # CELEB-DF dataset
+    CDF_orig_allfiles = load_file_names(bs_fldr, 'celeb_real', join_bsfldr=False)
+    CDF_fake_allfiles = load_file_names(bs_fldr, 'celeb_fake', join_bsfldr=False)
+    
+    id_lbl = np.unique([f.split('/')[-1].split('_')[0] for f in CDF_orig_allfiles])  # get the unique ids    
+    for k in id_lbl:
+        
+        #real Train
+        orig_files = [f for f in CDF_orig_allfiles if f.split('/')[-1].split('_')[0]==k] # current file label
+        train_dict['CDF_' + k] = orig_files.copy()
+        
+        #real Test
+        test_dict['real']['CDF_'+k] = orig_files.copy()
+        
+        #fake
+        test_dict['fake']['CDF_'+k] = [f for f in CDF_fake_allfiles if f.split('/')[-1].split('_')[1]==k] # current file label
+        
+    # add new test videos for Jennifer Lawerence
+    jen_l_v = load_file_names(bs_fldr, 'jennifer_l', join_bsfldr=False)
+    # remove pW7TbJJMVak.mp4 file which is ground-truth from 
+    #train_dict['CDF_id12'] = train_dict['CDF_id12'] + [f for f in jen_l_v if 'pW7TbJJMVak_0' not in f and 'real.npy' not in f]    
+    test_dict['real']['CDF_id12'] = test_dict['real']['CDF_id12'] + ['jennifer_l/real.npy', 'jennifer_l/pW7TbJJMVak_0.npy'] #
+    
+    
+    # IN wild
+    # steve bushemi and jennifer lawrence
+    train_dict['inwild_sb'] = load_file_names(bs_fldr, 'steve_b', join_bsfldr=False)    
+    
+    # steve faceswap
+    test_dict['fake']['inwild_sb'] = load_file_names(bs_fldr, 'steve_faceswap', join_bsfldr=False)
+    
+    
+    # in wild dataset
+    inwild_orig_allfiles = load_file_names(bs_fldr, 'inwild_orig', join_bsfldr=False)
+    inwild_fake_allfiles = load_file_names(bs_fldr, 'inwild_fake', join_bsfldr=False)
+    
+    id_lbl = np.unique([f.split('/')[-1].split('_')[0] for f in inwild_orig_allfiles])  # get the unique ids
+    for k in id_lbl:
+        
+        #real Train
+        orig_files = [f for f in inwild_orig_allfiles if f.split('/')[-1].split('_')[0]==k] # current file label
+        
+        # divide in train and test, there are four identities (billie ellish, angela office, bill hader, tom crusie)
+        # for bill hader and angela office remove the test-fake utterance from the repo and add it to the test set instead
+        #bh_real_test = ['bh_zS1Aee2X3Yc_5', 'bh_zS1Aee2X3Yc_6', 'bh_zS1Aee2X3Yc_8']
+        bh_real_test = ['bh_zS1Aee2X3Yc_2', 'bh_zS1Aee2X3Yc_3', 'bh_zS1Aee2X3Yc_4', 'bh_XGr_yXtJ170', 'bh_zS1Aee2X3Yc_10'] #,
+        
+        if k == 'bh':
+            tr_files = [f for f in orig_files if not np.any([x in f for x in bh_real_test])]
+            ts_files = [f for f in orig_files if np.any([x in f for x in bh_real_test])]
+            train_dict['inwild_' + k] = tr_files.copy()
+            test_dict['real']['inwild_'+k] = ['inwild_orig/bh_XGr_yXtJ170_3.npy', 
+                                              'inwild_orig/bh_XGr_yXtJ170_5.npy', 
+                                              'inwild_orig/bh_XGr_yXtJ170_6.npy', 
+                                              'inwild_orig/bh_XGr_yXtJ170_8.npy', 
+                                              'inwild_orig/bh_XGr_yXtJ170_10.npy'] #ts_files.copy() #
+            
+        if k == 'an':
+            tr_files = [f for f in orig_files if not np.any([x in f for x in ['an_w8TeV93Ji7M_9']])]
+            ts_files = [f for f in orig_files if np.any([x in f for x in ['an_w8TeV93Ji7M_9']])]
+            train_dict['inwild_' + k] = tr_files.copy()
+            test_dict['real']['inwild_'+k] = ts_files.copy()            
+            
+        if k == 'be':
+            train_dict['inwild_' + k] = orig_files.copy()
+            test_dict['fake']['inwild_'+k] = ['inwild_fake/an_be_03.npy'] # current file label  
+            
+        if k == 'tc':
+            train_dict['inwild_' + k] = orig_files.copy()
+            test_dict['fake']['inwild_'+k] = ['inwild_fake/bh_tc_01.npy'] # current file label  
+
+    return train_dict, test_dict
+
+
+
+def add_colorbar(im, aspect=20, pad_fraction=0.5, **kwargs):
+    from mpl_toolkits import axes_grid1
+ 
+    """Add a vertical color bar to an image plot."""
+    divider = axes_grid1.make_axes_locatable(im.axes)
+    width = axes_grid1.axes_size.AxesY(im.axes, aspect=1./aspect)
+    pad = axes_grid1.axes_size.Fraction(pad_fraction, width)
+    current_ax = plt.gca()
+    cax = divider.append_axes("right", size=width, pad=pad)
+    plt.sca(current_ax)
+    return im.axes.figure.colorbar(im, cax=cax, **kwargs)
