@@ -29,11 +29,6 @@ class Repo_TSNE(object):
         self.frames = frames
         self.step = step
         self.pool_func = pool_func
-        
-        # initialize dlib's face detector (CNN-based) and then create
-        # the facial landmark predictor and the face aligner
-        self.detector = dlib.cnn_face_detection_model_v1('mmod_human_face_detector.dat')
-        self.sp = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
     
         
     def read_feat_file(self, f):
@@ -114,31 +109,6 @@ class Repo_TSNE(object):
                 self.embDF = pd.concat((self.embDF, all_id_feat.copy()), ignore_index=True, sort=False)
                 
             all_id_feat = []
-            
-    # return the face image cropped from a frame in the video
-    def extract_face_images(self, fl_nm, frame_no=-1, time=-1):
-        
-        # read the frame
-        video = mpe.VideoFileClip(os.path.join(self.bs_fldr, fl_nm))
-        if time>=0:
-            frame = video.get_frame(time) # get the frame at t=2 seconds
-        if frame_no>=0:
-            frame = video.get_frame(frame_no/video.fps) # get the frame at t=2 seconds
-        
-        # might need to change the image format to PIL image
-        
-        # crop and align the face to 256x256
-        dets = self.detector(frame, 1)
-        faces = dlib.full_object_detections()
-        for detection in dets:
-            faces.append(self.sp(frame, detection))
-    
-        # Get the aligned face images
-        # Optionally: 
-        # images = dlib.get_face_chips(img, faces, size=160, padding=0.25)
-        face_image = dlib.get_face_chips(frame, faces, size=256)        
-        
-        return face_image[0]
     
     def compute_tsne(self):
         

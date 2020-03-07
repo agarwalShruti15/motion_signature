@@ -17,29 +17,19 @@ The models can be found at: https://www.dropbox.com/sh/lfon3rvjvt6uatk/AAAALG6B0
 
 ## Feature Generation
 
-### VGG feature:
+### VGG and FAb-Net feature:
 
-Feature Extraction File: data/extract_vgg.py
+Feature Extraction File: data/extract_vgg_fabnet.py
 Usage: cd data/
-python -W ignore extract_vgg.py \ 
+python -W ignore extract_vgg_fabnet.py \ 
 --bsfldr <basefolder with mp4 files> \ 
 --njobs 4 \
 --openface <Openface Binary Folder> \
 --fnmodel <Path to VGG Model : download from .> \
---ofd  <output base folder>
+--of  <output base folder for fabnet features>
+--ov  <output base folder for VGG features>
 
-### FabNet features:
-
-Feature Extraction File: data/extract_fabnet.py
-Usage: cd data/
-python -W ignore extract_fabnet.py \ 
---bsfldr <basefolder with mp4> \ 
---njobs 4 \
---openface <Openface Binary Folder> \
---fnmodel <Path to Fabnet Model : download from .> \
---ofd  <output base folder>
-
-### FabNet features after metric learning:
+### Behavior-Net Features
 
 Feature Extraction File: research-ms-loss-master/generate_all.py
 Usage: 
@@ -60,5 +50,6 @@ MODEL:PRETRIANED_PATH
 1) Activate the virtual environment (source /data/opt/voxceleb/bin/activate)
 2) cd research-ms-loss-master
 3) sh run_cub.sh
+python tools/main.py --cfg configs/ms_resnet101_fabnet_vox.yaml > log_file.txt
 
-There are example configuration files given for classification task and metric learning task in research-ms-loss-master/configs/leaders_classification.yaml and research-ms-loss-master/configs/leader_metric_learning.yaml.
+There are example configuration files given for metric learning task in research-ms-loss-master/configs/ms_resnet101_fabnet_vox.yaml

@@ -7,9 +7,9 @@
 
 # Openface UBUNTU installation, it assume we already have opencv and dlib installed
 cd data
-#wget https://github.com/TadasBaltrusaitis/OpenFace/archive/master.zip
-#unzip master.zip
-#rm master.zip
+wget https://github.com/TadasBaltrusaitis/OpenFace/archive/master.zip
+unzip master.zip
+rm master.zip
 cd OpenFace-master
 sh download_models.sh
 echo "Installing OpenFace..."
@@ -20,11 +20,11 @@ make
 cd ../../
 
 # fab-net model installation
-cd data
-wget http://www.robots.ox.ac.uk/~vgg/research/unsup_learn_watch_faces/release_bmvc_fabnet.zip
-unzip release_bmvc_fabnet.zip
-rm release_bmvc_fabnet.zip
-cd ../
+#cd data
+#wget http://www.robots.ox.ac.uk/~vgg/research/unsup_learn_watch_faces/release_bmvc_fabnet.zip
+#unzip release_bmvc_fabnet.zip
+#rm release_bmvc_fabnet.zip
+#cd ../
 
 # python libraries installation
 pip install -r requirements.txt
