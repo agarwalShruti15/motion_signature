@@ -20,28 +20,42 @@ The models can be found at: https://www.dropbox.com/sh/lfon3rvjvt6uatk/AAAALG6B0
 ### VGG and FAb-Net feature:
 
 Feature Extraction File: data/extract_vgg_fabnet.py
+
 Usage: cd data/
+
 python -W ignore extract_vgg_fabnet.py \ 
+
 --bsfldr <basefolder with mp4 files> \ 
+
 --njobs 4 \
+
 --openface <Openface Binary Folder> \
+
 --fnmodel <Path to VGG Model : download from .> \
+
 --of  <output base folder for fabnet features>
+
 --ov  <output base folder for VGG features>
 
 ### Behavior-Net Features
 
 Feature Extraction File: research-ms-loss-master/generate_all.py
+
 Usage: 
 1) cd research-ms-loss-master/
 2) Update the pretrained model path in config file : 
 MODEL:PRETRIANED_PATH
 
 3) python -W ignore generate_all.py \ 
+
 --bsfldr <basefolder with mp4> \ 
+
 --njobs 4 \
+
 --ofd  <output base folder>
+
 --cfg configs/ms_resnet101_fabnet_vox.yaml
+
 --ow 5
 
   
