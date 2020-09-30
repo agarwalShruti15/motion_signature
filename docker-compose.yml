@@ -1,0 +1,30 @@
+---
+
+version: '3.7'
+services:
+  ## Essential packages for building
+  original_motion_signature:
+    image: "gitlab-registry.mediforprogram.com/mmcdermott/original_motion_signature/original:${TAG:-latest}"
+    container_name: original_motion_signature
+    build:
+      args:
+        HOST_USERID: "${HOST_USERID:-1000}"
+        HOST_USERNAME: "${HOST_USERNAME:-$USER}"
+      context: .
+      dockerfile: Dockerfile
+    tty: true
+    stdin_open: true
+    volumes:
+      - "homedir:/home/${HOST_USERNAME:-$USER}"   # user settings persistence
+      - "etc:/etc"   # user password persistence
+      - "opt:/opt"   # user install
+#      - "/dock/houseboat18:/dock/houseboat18"     # passthrough
+      - "$HOME:/host/$HOME:ro"                    # access to user home
+      - "/mnt:/mnt:ro"                            # access to mount points
+
+
+volumes:
+  homedir:
+  etc:
+  opt:
+...
