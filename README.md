@@ -67,3 +67,9 @@ MODEL:PRETRIANED_PATH
 python tools/main.py --cfg configs/ms_resnet101_fabnet_vox.yaml > log_file.txt
 
 There are example configuration files given for metric learning task in research-ms-loss-master/configs/ms_resnet101_fabnet_vox.yaml
+  
+## Reference:
+  
+"Detecting Deep-Fake Videos from Appearance and Behavior", 
+S. Agarwal , T. Gaaly, H. Farid, and S. Lim, 
+IEEE Workshop on Information Forensics and Security (WIFS), Online, 2020.
